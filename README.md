@@ -76,7 +76,7 @@ The project includes foure different data entry methods to populate the database
    - This method enabled bulk data insertion quickly and efficiently.  
    - We used PostgreSQL’s import feature within **pgAdmin** to load structured data into the tables.
 **📸 Screenshot:**  
-![CSV File Import](path/to/csv_import_screenshot.png)  
+![CSV File Import](https://github.com/gilakassab/Bakery_0821_6010/blob/main/Stage%201/DataImportFiles/importScreenshot.png))  
 
 4. **Python Script for Data Generation**  
    - We wrote a Python script to generate structured data and export it into a CSV file.  
@@ -101,7 +101,7 @@ The steps we followed:
 4. Clicked **OK** to initiate the backup.  
 
 #### Screenshot of Backup Process  
-![Backup Screenshot](path/to/backup_screenshot.png)  
+![Backup Screenshot](https://github.com/gilakassab/Bakery_0821_6010/blob/main/Stage%201/backup%26restore/backupScreenshot.png)  
 
 ---
 
@@ -113,7 +113,7 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 4. Clicked **Restore** to complete the process.  
 
 #### Screenshot of Restore Process  
-![Restore Screenshot](path/to/restore_screenshot.png) 
+![Restore Screenshot](https://github.com/gilakassab/Bakery_0821_6010/blob/main/Stage%201/backup%26restore/restoreScreenshot.png) 
 
 ---
 
