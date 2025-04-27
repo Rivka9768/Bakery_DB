@@ -9,7 +9,9 @@
 5. [Backup and Restore](#backup-and-restore)
 
 [Phase 2 - Integration](#phase-2-integration)
-
+- [Select queries](#select-queries)
+- [Update queries](#update-queries)
+- [Delete queries](#delete-queries)
 ---
 
 ## Cover Page
@@ -207,7 +209,9 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 ![image](https://github.com/user-attachments/assets/df4caab3-91be-4c8a-bab8-9ab9486a0443)
 
 **UPDATE QUERIES:**
+
 **1. Update Recipe and Nutrition Facts for Baked Goods**
+
 העסקה הזאת מבצעת עדכונים בשתי טבלאות:
 עדכון מתכון: כמות הסוכר במתכון עבור מוצר מאפה ספציפי (עם bakedGoodsId = 52) מתעדכנת ב-200 גרם (0.20 ק"ג). הסוכר מזוהה לפי RawMaterialsId, שנלקח מטבלת ה-RawMaterials.
 עדכון נתוני תזונה: כמות הסוכר מתעדכנת ב-0.20 ק"ג, והקלוריות מתעדכנות ב-774 עבור אותו מוצר מאפה (עם bakedGoodsId = 52) בטבלת NutritionFacts.
@@ -288,7 +292,23 @@ After:
 ![image](https://github.com/user-attachments/assets/920570d6-aaa1-4217-b88e-20455dd528d0)
 
 
-**3.**
+**3. Deleting Raw Materials Not Used in Any Recipe**
+
+שאילתה זו מוחקת את כל הרשומות מטבלת RawMaterials שחומר הגלם שלהן (RawMaterialsId) אינו מופיע בטבלת recipe. כלומר, נשמרים רק חומרי גלם שמקושרים לפחות למתכון אחד. השאילתה מתחשבת גם בכך שחומרי גלם עם ערך NULL לא ייכללו בבדיקה.
+
+![image](https://github.com/user-attachments/assets/7a1d8ea6-bedc-4a47-923f-2ba8a10ba1f5)
+
+Before:
+
+![image](https://github.com/user-attachments/assets/c809dd0f-21a6-419f-82d7-aa93f3fb8aba)
+
+After:
+
+![image](https://github.com/user-attachments/assets/e9826edd-3151-4c10-9fec-c32126894bd0)
+
+
+
+
 
 
 
