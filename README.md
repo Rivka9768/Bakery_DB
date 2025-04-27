@@ -120,7 +120,7 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 
 ---
 
-### Phase 2 - Integration
+### Phase 2 Integration
 **SELECT QUERIES:**
 **1. Average calorie count per baked goods category, ordered from highest to lowest**
 
@@ -134,11 +134,13 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 
 
 **2. Total Production per Employee in 2024, Ordered by Output**
+
 השאילתה מחברת את טבלאות Employee ו-ProductionLine באמצעות NATURAL JOIN כדי לחשב את מספר היחידות הכולל שהופק על ידי כל עובד במהלך שנת 2024.
 הנתונים מקובצים לפי שם העובד (e.name), ומחושב סך הכולל של ההפקה (SUM(pl.quantity)) עבור כל עובד.
 בסופו של תהליך, התוצאות ממוינות בסדר יורד לפי ערך ההפקה הכוללת, כך שהעובדים עם ההפקה הגבוהה ביותר מוצגים קודם.
 
 ![image](https://github.com/user-attachments/assets/6433d313-6eb6-454d-9cd3-2c95c230a05b)
+
 ![image](https://github.com/user-attachments/assets/db134df5-9f50-48fd-ae13-a63edf61053f)
 
 
@@ -150,9 +152,11 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 
 
 ![image](https://github.com/user-attachments/assets/7cc98e1f-05b7-47c7-9659-676f490cdc89)
+
 ![image](https://github.com/user-attachments/assets/f1d96095-1cb3-4744-90b5-6df6516d053e)
 
 **4. Branch Production Efficiency: Total Output, Number of Employees, and Average Production per Employee**
+
 השאילתה מאחדת נתונים מהטבלאות Branches, Employee, ו-ProductionLine באמצעות NATURAL JOIN,
 ומחזירה עבור כל סניף את המזהה (branchId), המיקום (location), סך כל יחידות הייצור (totalProduction), מספר העובדים הייחודיים (numEmployees), ואת ממוצע יחידות הייצור לעובד (productionPerEmployee).
 התוצאות כוללות רק סניפים שבהם יש לפחות עובד אחד (באמצעות תנאי HAVING).
@@ -160,13 +164,16 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 
 
 ![image](https://github.com/user-attachments/assets/0e3c6c6a-2415-4be5-b719-49fc1fd9eb36)
+
 ![image](https://github.com/user-attachments/assets/a7b1617f-c6c4-4497-b89d-8259ca254075)
 
 **5. Baked Goods Priced Above Average per Weight, Ordered by Price**
+
 השאילתה מאחדת נתונים מהטבלאות BakedGoods ו-Categories באמצעות JOIN, ומחזירה שמות ייחודיים של מוצרי מאפה (bg.name) ואת מחירם ליחידת משקל (c.priceperweight).
 מוצרי המאפה שנבחרים הם רק אלו שמחירם ליחידת משקל גבוה מהממוצע המחושב לכלל מוצרי המאפה במערכת.
 בסיום, התוצאות ממוינות בסדר יורד לפי מחיר ליחידת משקל, כך שהמוצרים היקרים יותר מוצגים ראשונים.
 ![image](https://github.com/user-attachments/assets/92b8df4d-0d12-403b-8870-c3f8276a7c78)
+
 ![image](https://github.com/user-attachments/assets/7ecb98a6-23b2-404e-a380-905eb7f7a54a)
 
 **6. Total Baked Goods Produced Per Month in 2024, Ordered by Month**
@@ -176,6 +183,7 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 השאילתה מבטיחה שהתוצאות יכללו רק את השנה 2024 (באמצעות EXTRACT(YEAR FROM productionDate)).
 
 ![image](https://github.com/user-attachments/assets/191cbb5b-a901-40bb-b54f-d8c0c5e701f9)
+
 ![image](https://github.com/user-attachments/assets/1c9c65db-2601-43dd-ab62-615afb4fe99a)
 
 **7. Employee Count by Branch Location, Ordered by Employee Count**
@@ -184,8 +192,8 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 הנתונים נאספים בעזרת חיבור מסוג LEFT JOIN בין טבלאות Branches ו-Employee, כך שגם סניפים ללא עובדים ייכללו בתוצאה עם ערך של 0 לעובדים.
 התוצאות ממוינות לפי מספר העובדים בסדר יורד, כך שסניפים עם יותר עובדים יופיעו קודם.
 
-
 ![image](https://github.com/user-attachments/assets/be14daba-25d6-4872-b2e0-95eca932f6d2)
+
 ![image](https://github.com/user-attachments/assets/2f0ec9f5-194b-49cd-9f50-3b76f30fe73d)
 
 **8. Expired Baked Goods: Production Line ID and Expiration Date**
@@ -193,7 +201,9 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 השאילתה מחזירה את מזהה קו הייצור (productionLineId) ואת תאריך התפוגה של מוצרי המאפה, שמחושב על ידי הוספת זמן חיי המוצר (לפי lifetime בטבלת BakedGoods) לתאריך הייצור (productionDate) מתוך טבלת ProductionLine.
 השאילתה מסננת את התוצאות כך שמופיעים רק המוצרים שתאריך התפוגה שלהם עבר את התאריך הנוכחי (CURRENT_DATE).
 התוצאות ממוינות בסדר יורד לפי תאריך התפוגה, כך שמוצרים שתוקפם פג קודם יופיעו ראשונים.
+
 ![image](https://github.com/user-attachments/assets/ed6278e3-3bc9-4087-8c5a-e1c3d16f306c)
+
 ![image](https://github.com/user-attachments/assets/df4caab3-91be-4c8a-bab8-9ab9486a0443)
 
 **UPDATE QUERIES:**
@@ -207,9 +217,11 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 ![image](https://github.com/user-attachments/assets/7b56c832-2dcf-474e-8d58-f1c56aabc1d7)
 
 Before:
+
 ![image](https://github.com/user-attachments/assets/47e014f9-8fe3-4764-b5a9-ac39cf925ce6)
 
 After:
+
 ![image](https://github.com/user-attachments/assets/e555c0bc-d2d2-4aa6-a912-d13e33107d88)
 
 **2. Update Category Price Based on VAT Increase**
@@ -220,12 +232,68 @@ After:
 ![image](https://github.com/user-attachments/assets/e06d7e4c-4ae6-4601-bf0b-818e69db7b41)
 
 Before:
+
 ![image](https://github.com/user-attachments/assets/c7b442e2-3537-4bd4-b285-a5c8596cb272)
 
 After:
+
 ![image](https://github.com/user-attachments/assets/54cbf789-e0e4-46d6-840b-149c33c18bab)
 
+**3. Update Bakers to Senior Bakers in Bnei Brak Branch Due to Staff Shortage**
+
+השאילתה מעדכנת את כל העובדים בעלי תפקיד "אופה" בסניף בני ברק, והופכת אותם ל"סופר אופים" (Senior Bakers), זאת מאחר שמספר העובדים בסניף נמוך מהמינימום הנדרש (פחות מ-4 עובדים). הפעולה מתבצעת במסגרת טרנזקציה כדי להבטיח עקביות הנתונים.
+
+![image](https://github.com/user-attachments/assets/eac14fbd-c003-42c7-a79a-3f8ac6301626)
+
+Before:
+
+![image](https://github.com/user-attachments/assets/3da82602-95d4-40f3-b84b-ad3d9bfad1c6)
+
+After:
+
+![image](https://github.com/user-attachments/assets/f1875b55-9535-4738-9d2c-ed3eda8739fe)
+
+**DELETE QUERIES:**
+
+**1. Deleting old records from the production line**
+
+שאילתה זו מוחקת רשומות מטבלת ProductionLine שבהן תאריך הייצור (productionDate) הוא לפני יותר משלוש שנים מהתאריך הנוכחי.
+המטרה היא לנקות מידע ישן ולא רלוונטי ולשמור על גודל נתונים סביר.
+
+
+
+![image](https://github.com/user-attachments/assets/e5b01f51-1f94-4be8-a7cc-518f344f3b58)
+
+Before:
+
+![image](https://github.com/user-attachments/assets/38f83b81-7cbb-43cd-8e49-97fcc5771b8c)
+
+After:
+
+![image](https://github.com/user-attachments/assets/a9bc3d15-bfbc-4d03-a722-2239b8b3e8b2)
+
+
+**2. Delete Unlinked Baked Goods**
+
+השאילתה מוחקת רשומות מטבלת bakedGoods שאין להן התאמה בטבלת productionLine, כלומר מוצרי מאפה שלא משויכים לאף קו ייצור.
+
+![image](https://github.com/user-attachments/assets/d1f58479-45b5-407b-9c32-c40dbe8441d2)
+
+Before:
+
+![image](https://github.com/user-attachments/assets/332f1415-2f88-495d-8cd7-58c81eac430c)
+
+After:
+
+![image](https://github.com/user-attachments/assets/920570d6-aaa1-4217-b88e-20455dd528d0)
+
+
 **3.**
+
+
+
+
+
 
 
 
