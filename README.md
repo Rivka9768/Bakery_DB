@@ -12,7 +12,8 @@
 - [Select queries](#select-queries)
 - [Update queries](#update-queries)
 - [Delete queries](#delete-queries)
----
+- [Rollback](#rollback)
+- [Commit](#commit)
 
 ## Cover Page
 **Project Name:** Bakery_DB  
@@ -123,7 +124,7 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 ---
 
 ### Phase 2 Integration
-**SELECT QUERIES:**
+### **SELECT QUERIES:**
 **1. Average calorie count per baked goods category, ordered from highest to lowest**
 
 השאילתה מאגדת נתונים משלוש טבלאות (Categories, BakedGoods ו-NutritionFacts) לצורך חישוב ממוצע הקלוריות עבור כל קטגוריית מוצרי מאפה.
@@ -208,9 +209,10 @@ To restore the database, we used **pgAdmin**'s restore functionality:
 
 ![image](https://github.com/user-attachments/assets/df4caab3-91be-4c8a-bab8-9ab9486a0443)
 
-**UPDATE QUERIES:**
+### **UPDATE QUERIES:**
 
 **1. Update Recipe and Nutrition Facts for Baked Goods**
+
 
 העסקה הזאת מבצעת עדכונים בשתי טבלאות:
 עדכון מתכון: כמות הסוכר במתכון עבור מוצר מאפה ספציפי (עם bakedGoodsId = 52) מתעדכנת ב-200 גרם (0.20 ק"ג). הסוכר מזוהה לפי RawMaterialsId, שנלקח מטבלת ה-RawMaterials.
@@ -257,7 +259,7 @@ After:
 
 ![image](https://github.com/user-attachments/assets/f1875b55-9535-4738-9d2c-ed3eda8739fe)
 
-**DELETE QUERIES:**
+### **DELETE QUERIES:**
 
 **1. Deleting old records from the production line**
 
@@ -305,6 +307,61 @@ Before:
 After:
 
 ![image](https://github.com/user-attachments/assets/e9826edd-3151-4c10-9fec-c32126894bd0)
+
+
+### Commit
+
+עדכון מסד הנתונים
+
+![image](https://github.com/user-attachments/assets/6219c3d4-4706-46e6-acde-372cccdf275c)
+
+בדיקה לפני COMMIT בטאב חדש
+
+![image](https://github.com/user-attachments/assets/bf465871-c884-4b05-9e5f-285d96646773)
+
+ביצוע COMMIT
+
+![image](https://github.com/user-attachments/assets/088d05d5-76f8-4230-bbfd-4de13569278c)
+
+בדיקה אחרי COMMIT גם בטאב אחר כדי לבדוק אם באמת נשמר לבסיס הנתונים
+
+![image](https://github.com/user-attachments/assets/710e0b0a-947b-4000-8b8b-1fbe15ebf80a)
+
+אכן פעולת הCOMMIT עבדה ומסד הנתונים התעדכן!
+
+
+### Rollback
+
+יש לנו 403 עובדים
+
+![image](https://github.com/user-attachments/assets/2fae84b4-5f98-4e41-892b-60fdf3411ddb)
+
+הרצה של INSERT עם Begin )commit)
+
+![image](https://github.com/user-attachments/assets/c81a6f9e-134d-4473-b229-bfcafce61ff8)
+
+טבלת העובדים לאחר ההכנסה של עובד נוסף
+
+![image](https://github.com/user-attachments/assets/4c38c621-97d1-4ba9-bee9-646ea2b24e1c)
+
+ביצוע הrollback:
+
+![image](https://github.com/user-attachments/assets/4861464a-b95d-461b-8075-08396713226e)
+
+הנתונים אכן חזרו לקדמותם
+
+![image](https://github.com/user-attachments/assets/b706ca4e-09ca-4c6d-a172-ae5542f41074)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
