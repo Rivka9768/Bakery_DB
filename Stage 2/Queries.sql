@@ -15,7 +15,7 @@ SELECT e.name, SUM(pl.quantity) AS totalProduction
 FROM Employee e
 NATURAL JOIN ProductionLine pl
 WHERE EXTRACT(YEAR FROM pl.productionDate) = 2024
-GROUP BY e.name
+GROUP BY e.EmployeeId
 ORDER BY totalProduction DESC;
 
 
