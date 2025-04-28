@@ -14,6 +14,7 @@
 - [Delete queries](#delete-queries)
 - [Rollback](#rollback)
 - [Commit](#commit)
+- [Constraints](#constraints)
 
 ## Cover Page
 **Project Name:** Bakery_DB  
