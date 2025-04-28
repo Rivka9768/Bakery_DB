@@ -432,6 +432,9 @@ COMMIT;
 *לפני העדכון:*
 
 ![image](https://github.com/user-attachments/assets/3da82602-95d4-40f3-b84b-ad3d9bfad1c6)
+![image](https://github.com/user-attachments/assets/ffe0ac05-c384-4667-bb51-1e208de890e4)
+
+
 
 *הרצה:*
 
@@ -439,7 +442,7 @@ COMMIT;
 
 *תוצאה:*
 
-![image](https://github.com/user-attachments/assets/f1875b55-9535-4738-9d2c-ed3eda8739fe)
+![image](https://github.com/user-attachments/assets/4bcb4f20-f117-4053-b09c-9eb11601c7f6)
 
 
 ### **DELETE QUERIES:**
