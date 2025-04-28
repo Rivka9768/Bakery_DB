@@ -151,7 +151,7 @@ ORDER BY avgCalories DESC;
 **2. Total Production per Employee in 2024, Ordered by Output**
 
 השאילתה מחברת את טבלאות Employee ו-ProductionLine באמצעות NATURAL JOIN כדי לחשב את מספר היחידות הכולל שהופק על ידי כל עובד במהלך שנת 2024.
-הנתונים מקובצים לפי שם העובד (e.name), ומחושב סך הכולל של ההפקה (SUM(pl.quantity)) עבור כל עובד.
+הנתונים מקובצים לפי זהות העובד (e.EmployeeId), ומחושב סך הכולל של ההפקה (SUM(pl.quantity)) עבור כל עובד.
 בסופו של תהליך, התוצאות ממוינות בסדר יורד לפי ערך ההפקה הכוללת, כך שהעובדים עם ההפקה הגבוהה ביותר מוצגים קודם.
 
 *שאילתא:*
@@ -160,15 +160,16 @@ SELECT e.name, SUM(pl.quantity) AS totalProduction
 FROM Employee e
 NATURAL JOIN ProductionLine pl
 WHERE EXTRACT(YEAR FROM pl.productionDate) = 2024
-GROUP BY e.name
+GROUP BY e.EmployeeId
 ORDER BY totalProduction DESC;
 ```
 *הרצה:*
 
-![image](https://github.com/user-attachments/assets/6433d313-6eb6-454d-9cd3-2c95c230a05b)
+![image](https://github.com/user-attachments/assets/a6868195-735e-4572-9464-89facbe3186b)
+
 *תוצאה:*
 
-![image](https://github.com/user-attachments/assets/db134df5-9f50-48fd-ae13-a63edf61053f)
+![image](https://github.com/user-attachments/assets/0ca49e57-8108-412b-b671-eed34e1af8bc)
 
 
 **3. High-Fat or High-Sugar Baked Goods, Ordered by Fat and Sugar Content**
