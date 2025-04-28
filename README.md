@@ -476,22 +476,25 @@ WHERE productionDate < CURRENT_DATE - INTERVAL '3 years';
 
 *שאילתא:*
 ```sql
-delete from bakedGoods
-using bakedGoods as b
-left join productionLine p on p.bakeGoodsId = b.bakedGoodsId
-where p.productionLineId is null;
+DELETE FROM bakedGoods
+WHERE bakedGoodsId IN (
+    SELECT b.bakedGoodsId
+    FROM bakedGoods b
+    LEFT JOIN productionLine p ON p.bakeGoodsId = b.bakedGoodsId
+    WHERE p.productionLineId IS NULL
+);
 ```
 *לפני המחיקה:*
 
-![image](https://github.com/user-attachments/assets/332f1415-2f88-495d-8cd7-58c81eac430c)
+![image](https://github.com/user-attachments/assets/884852c6-ce44-4f8b-b2ff-d2b03cb3bbdb)
 
 *הרצה:*
 
-![image](https://github.com/user-attachments/assets/d1f58479-45b5-407b-9c32-c40dbe8441d2)
+![image](https://github.com/user-attachments/assets/c466019b-5d0a-4c92-9b18-95b293961665)
 
 *תוצאה:*
 
-![image](https://github.com/user-attachments/assets/920570d6-aaa1-4217-b88e-20455dd528d0)
+![image](https://github.com/user-attachments/assets/e16daba7-a3e5-4ab0-bdaa-7c2623b16f52)
 
 
 **3. Deleting Raw Materials Not Used in Any Recipe**
@@ -591,6 +594,77 @@ SELECT * FROM Employee;
 ```
 ![image](https://github.com/user-attachments/assets/b706ca4e-09ca-4c6d-a172-ae5542f41074)
 
+
+### **Constraints:**
+
+**1. Ensures no two employees share the same email (employee.email)**
+
+*אילוץ:*
+
+```sql
+ALTER TABLE employee
+ADD CONSTRAINT unique_employee_email UNIQUE (email);
+```
+*הרצה:*
+
+![image](https://github.com/user-attachments/assets/3f5e756e-b3b8-4a84-b6b9-27ab34a2ba95)
+
+*פקודה הסותרת את האילוץ:*
+```sql
+INSERT INTO employee (employeeid, name, phone, email, dob, branchid, roleid)
+VALUES
+(404, 'Maria Sharon', '054-1234567', 'david.cohen@example.com', '1990-05-15', 1, 2);
+```
+
+*תוצאת הרצת פקודה הסותרת את האילוץ:*
+
+![image](https://github.com/user-attachments/assets/94c88d18-8c67-4b0b-a2f7-f148fcf3300a)
+
+
+
+**2. Enforces that every category’s price per weight (Categories.pricePerWeight) is greater than 0**
+
+*אילוץ:*
+
+```sql
+ALTER TABLE Categories
+ADD CONSTRAINT chk_valid_price CHECK (pricePerWeight > 0);
+```
+*הרצה:*
+
+![image](https://github.com/user-attachments/assets/77cec9de-4ba9-4657-81fe-1e20b119b0f3)
+
+*פקודה הסותרת את האילוץ:*
+```sql
+INSERT INTO Categories (CategoryId, name, description, pricePerWeight) VALUES
+(11, 'Drinks', 'Ices and drinks', -1);
+```
+*תוצאת הרצת פקודה הסותרת את האילוץ:*
+
+![image](https://github.com/user-attachments/assets/6c55498e-357d-4ff1-8cde-d7e434018e86)
+
+
+**3. makes the production line’s date (productionLine.productionDate) default to the current date if none is provided**
+
+*אילוץ:*
+
+```sql
+ALTER TABLE productionLine
+ALTER COLUMN productionDate SET DEFAULT CURRENT_DATE;
+```
+*הרצה:*
+
+![image](https://github.com/user-attachments/assets/4cbae51a-307a-4e8e-a045-0008ecd4e900)
+
+*פקודת INSERT:*
+```sql
+INSERT INTO productionLine (productionlineid, quantity, bakegoodsid, employeeid) 
+VALUES 
+(404, 150, 10, 144);
+```
+*תוצאת פקודת הINSERT העובדת עם האילוץ:*
+
+![image](https://github.com/user-attachments/assets/57804ec3-33c7-46b3-9250-b83f0740aa50)
 
 
 
