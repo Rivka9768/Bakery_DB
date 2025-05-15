@@ -668,7 +668,87 @@ VALUES
 
 ![image](https://github.com/user-attachments/assets/57804ec3-33c7-46b3-9250-b83f0740aa50)
 
+# 🧩 שילוב בסיסי נתונים – פרויקט אינטגרציה
 
+בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים:  
+1. בסיס נתונים של **המאפייה**  
+2. בסיס נתונים של **חנות הבגדים**
+
+---
+
+## שלבים שביצענו
+
+### 1. יצירת בסיס נתונים חדש
+יצרנו בסיס נתונים חדש בשם `INTEGRATION`, ושחזרנו לתוכו את הגיבוי של בסיס הנתונים של המאפייה.
+
+### 2. טעינת בסיס נתונים נוסף
+שחזרנו קובץ SQL נוסף המכיל את הנתונים של חנות הבגדים.  
+לפני ההרצה, שינינו את שם הטבלה `EMPLOYEE` ל־`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
+
+הפקודה ששימשה אותנו לטעינה:
+
+```bash
+psql --host=localhost --port=5432 --username=postgres --dbname=CLOTHES_DB --file="C:\Users\RIVKA\Downloads\dress_Backup#29.3.25.sql"
+```
+🖼️ כאן ניתן להוסיף צילום מסך של ההרצה או הפלט מהפקודה
+
+3. יצירת טבלאות חדשות
+DEPARTMENT – טבלת עזר לסיווג עובדים ומוצרים לפי מחלקה (מאפייה / חנות בגדים).
+
+PRODUCTS – טבלה מאוחדת של מוצרים, הממזגת בין BAKEDGOODS (מהמאפייה) ו־GARMENT (מהביגוד).
+
+🖼️ כאן ניתן להוסיף צילום מסך או דיאגרמה של הטבלאות החדשות
+
+4. מיזוג נתוני עובדים
+א. הכנת הטבלאות למיזוג
+הוספנו עמודה חדשה בשם DEPARTMENTID לשתי הטבלאות EMPLOYEE ו־EMPLOYEE_1:
+
+```sql
+ALTER TABLE EMPLOYEE ADD COLUMN DEPARTMENTID INT;
+ALTER TABLE EMPLOYEE_1 ADD COLUMN DEPARTMENTID INT;
+```
+עדכון הערכים לפי מקור העובדים:
+
+```sql
+UPDATE EMPLOYEE SET DEPARTMENTID = 2;   -- עובדים מהמאפייה
+UPDATE EMPLOYEE_1 SET DEPARTMENTID = 1; -- עובדים מהחנות
+```
+ב. התאמת המבנה של הטבלאות
+הוספת עמודות חסרות לטבלה EMPLOYEE:
+
+```sql
+ALTER TABLE EMPLOYEE ADD COLUMN JOINDATE DATE;
+ALTER TABLE EMPLOYEE ADD COLUMN SALARY NUMERIC;
+```
+הסרת הגדרת NOT NULL מעמודות קיימות:
+
+```sql
+ALTER TABLE EMPLOYEE ALTER COLUMN PHONE DROP NOT NULL;
+ALTER TABLE EMPLOYEE ALTER COLUMN CATEGORY_ID DROP NOT NULL;
+ALTER TABLE EMPLOYEE ALTER COLUMN ROLE_ID DROP NOT NULL;
+ALTER TABLE EMPLOYEE ALTER COLUMN DOB DROP NOT NULL;
+```
+🖼️ כאן ניתן להוסיף צילום מסך של מבנה הטבלאות לאחר העדכונים
+
+ג. מיזוג הנתונים בפועל
+הרצנו שאילתה שמכניסה את הנתונים מ־EMPLOYEE_1 לתוך EMPLOYEE:
+
+```sql
+INSERT INTO EMPLOYEE (employee_id, full_name, phone, role_id, category_id, dob, joindate, salary, departmentid)
+SELECT employee_id, full_name, phone, role_id, category_id, dob, joindate, salary, departmentid
+FROM EMPLOYEE_1;
+```
+✅ המיזוג הצליח!
+קיבלנו טבלה משולבת עם 803 שורות – פי שניים מהנתונים המקוריים.
+
+🖼️ כאן ניתן להוסיף צילום מסך של כמות השורות הסופית
+
+5. ניקוי סופי
+מחיקת הטבלה הזמנית:
+
+```sql
+DROP TABLE EMPLOYEE_1;
+```
 
 
 
