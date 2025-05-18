@@ -750,6 +750,75 @@ FROM EMPLOYEE_1;
 DROP TABLE EMPLOYEE_1;
 ```
 
+## 6. מיזוג טבלאות המוצרים – `GARMENT` ו־`BAKEDGOODS`
+
+### א. יצירת טבלה מאוחדת – `PRODUCTS`
+
+יצרנו טבלה חדשה בשם `PRODUCTS`, אשר מרכזת את הנתונים משתי טבלאות:
+- `GARMENT` (מוצרי חנות בגדים)
+- `BAKEDGOODS` (מוצרי מאפייה)
+
+הטבלה כוללת:
+- `productid` – מזהה רץ אוטומטית (`SERIAL`)
+- `departmentid` – מצביע למחלקה (מאפייה / בגדים)
+- את כל שדות `GARMENT`
+- את כל שדות `BAKEDGOODS`
+
+> כל השדות פרט ל־`productid` ו־`departmentid` הוגדרו כ־`NULLABLE`, מכיוון שאין עמודות משותפות בין שתי הישויות.
+
+דוגמה להגדרת `productid`:
+
+```sql
+productid SERIAL PRIMARY KEY
+```
+ב. הוספת עמודת productid ל־GARMENT ול־BAKEDGOODS
+הוספנו עמודה חדשה לשתי הטבלאות:
+
+```sql
+ALTER TABLE GARMENT ADD COLUMN productid INT;
+ALTER TABLE BAKEDGOODS ADD COLUMN productid INT;
+```
+הגדרת ערכי productid זמניים לצורך שילוב:
+
+```sql
+UPDATE GARMENT SET productid = 2;
+UPDATE BAKEDGOODS SET productid = 1;
+```
+📝 הערה: מספרים זמניים אלו שימשו לסיווג בלבד. הערך הסופי נקבע ע"י ה־SERIAL בטבלת PRODUCTS.
+
+ג. הכנסת נתונים לטבלת PRODUCTS
+הכנסנו את הנתונים מטבלת BAKEDGOODS ו־GARMENT לטבלת PRODUCTS, כל אחד לעמודות הרלוונטיות לו:
+
+```sql
+INSERT INTO PRODUCTS (column1_baked, column2_baked, ..., departmentid)
+SELECT column1_baked, column2_baked, ..., 1
+FROM BAKEDGOODS;
+```
+```sql
+INSERT INTO PRODUCTS (column1_garment, column2_garment, ..., departmentid)
+SELECT column1_garment, column2_garment, ..., 2
+FROM GARMENT;
+```
+ד. העברת קשרים (Foreign Keys)
+קשרים אל BAKEDGOODS ו־GARMENT
+כל טבלה או שדה שהיה מקושר ל־BAKEDGOODS.productid או GARMENT.productid עודכן להפנות אל PRODUCTS.productid.
+
+קשרים מתוך BAKEDGOODS ו־GARMENT
+כל קשר שהצביע מטבלאות אלו לטבלאות אחרות – עודכן לטבלה PRODUCTS, תוך שמירה על העמודות הרלוונטיות.
+
+✅ לאחר אימות תקינות כל הקשרים והנתונים – ניתן היה למחוק את הטבלאות המקוריות.
+
+ה. מחיקת הטבלאות הישנות
+```sql
+DROP TABLE BAKEDGOODS;
+DROP TABLE GARMENT;
+```
+✨ תוצאה
+כל המוצרים מוזגו לישות אחידה PRODUCTS.
+
+נשמרו כל קשרי הגומלין מול טבלאות אחרות.
+
+בסיס הנתונים כעת נקי, אחיד וכולל טבלת מוצרים אחת גנרית המתאימה לשתי המחלקות.
 
 
 
