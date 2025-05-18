@@ -16,6 +16,8 @@
 - [Commit](#commit)
 - [Constraints](#constraints)
 
+[Phase 3](#phase-3)
+
 ## Cover Page
 **Project Name:** Bakery_DB  
 **Submitted by:** **Gila Kassab 330080821 &
@@ -668,6 +670,7 @@ VALUES
 
 ![image](https://github.com/user-attachments/assets/57804ec3-33c7-46b3-9250-b83f0740aa50)
 
+## **PHASE 3**
 # 🧩 שילוב בסיסי נתונים – פרויקט אינטגרציה
 
 בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים:  
