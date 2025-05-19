@@ -680,13 +680,33 @@ VALUES
 ---
 
 ## שלבים שביצענו
+קיבלנו BACKUP לבסיס נתונים של חנות בגדים בפורמט SQL.
+ע"פ פקודות הcreate table ופקודות הFK יצרנו בERD פלוס דיאגרמת DSD לבסיס הנתונים שקיבלנו.
+דיאגרמת הDSD:
+![image (34)](https://github.com/user-attachments/assets/162b0c73-7778-4bbc-989e-b430ff893f86)
 
-### 1. יצירת בסיס נתונים חדש
+כעת מתוך דיאגרמת הDSD עשינו הינדוס לאחור ויצרנו דיאגרמת ERD עם הקשרים לפי Foreign Keys שהיו בטבלת הDSD.
+דיאגרמת הERD:
+![image (35)](https://github.com/user-attachments/assets/cccb92f7-860c-46a2-a048-cc39b0c2f6ba)
+
+כעת נותר לנו למזג את 2 הדיאגרמות על מנת ליצר בסיס נתונים משותף מ 2 הבסיסים המקוריים. הוספנו 2 ישויות חדשות: Department וPoduct.
+הישות Department נועדה לסמן את 2 המחלקות: מחלקת bakedgoods ומחלקת clothes - garment.
+הישות Product נועדה לשלב בין 2 הישויות שהיו בשני הבסיסים garment ו bakedgoods.
+כמוכן מיזגנו את ישות הEmployee בבסיס הנתונים המקורי עם ישות ה Employee בבסיס הנתונים שקיבלנו.
+דיאגרמת הERD המשולבת:
+ 
+![image (36)](https://github.com/user-attachments/assets/7da98cf8-9967-498a-96b2-da922af477ee)
+כעת מתוך הERD פלוס המרנו את הERD המשולב לטבלת DSD.
+דיאגרמת הDSD המשולבת:
+
+![image (37)](https://github.com/user-attachments/assets/627a43a3-d3ba-404c-a7f1-93c231bf9274)
+
+ יצירת בסיס נתונים חדש
 יצרנו בסיס נתונים חדש בשם `INTEGRATION`
-### 2. טעינת בסיס נתונים אחד
+ טעינת בסיס נתונים אחד
 שחזרנו לתוך בסיס הנתונים החדש את הגיבוי של בסיס הנתונים של המאפייה.
 
-### 2. טעינת בסיס נתונים נוסף
+ טעינת בסיס נתונים נוסף
 שחזרנו קובץ SQL נוסף המכיל את הנתונים של חנות הבגדים.  
 לפני ההרצה, שינינו את שם הטבלה `EMPLOYEE` ל־`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
 ![image](https://github.com/user-attachments/assets/b868272f-1763-42eb-b1c6-269c71513364)
@@ -699,13 +719,13 @@ VALUES
 psql --host=localhost --port=5432 --username=postgres --dbname=CLOTHES_DB --file="C:\Users\RIVKA\Downloads\dress_Backup#29.3.25.sql"
 ```
 
-3. יצירת טבלאות חדשות
+ יצירת טבלאות חדשות
 DEPARTMENT – טבלת עזר לסיווג עובדים ומוצרים לפי מחלקה (מאפייה / חנות בגדים).
 
 PRODUCTS – טבלה מאוחדת של מוצרים, הממזגת בין BAKEDGOODS (מהמאפייה) ו־GARMENT (מהביגוד).
 
 
-4. מיזוג נתוני עובדים
+ מיזוג נתוני עובדים
 א. הכנת הטבלאות למיזוג
 הוספנו עמודה חדשה בשם DEPARTMENTID לשתי הטבלאות EMPLOYEE ו־EMPLOYEE_1:
 ```sql
