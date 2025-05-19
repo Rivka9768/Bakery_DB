@@ -888,9 +888,112 @@ FROM GARMENT;
 
 
 #מבטים - views:
+מבט על הבסיס נתונים האחר: 
+```sql
+CREATE VIEW View_ClothingCustomersOrders AS
+SELECT 
+    c.customer_id,
+    c.customer_name,
+    c.customer_mail,
+    co.order_id,
+    co.order_date,
+    co.order_notes,
+    p.garment_name, 
+    pu.amount
+FROM customer c
+JOIN customer_order co ON c.customer_id = co.customer_id
+JOIN purchase pu ON co.order_id = pu.order_id
+JOIN Products p ON pu.garm_id = p.garment_id;
+```
+![image](https://github.com/user-attachments/assets/51d407dd-6b50-4c52-8b3b-c1460a1671b4)
+
+שליפה של הנתונים מה View:
+```sql
+select * from View_ClothingCustomersOrders;
+```
+![{7C2132E2-0DBF-4102-AF30-06085236C1C8}](https://github.com/user-attachments/assets/dcdf5509-15b6-45c8-b02a-adeee0119ba4)
+
+מבט על בסיס הנתונים המקורי:
+```sql
+CREATE VIEW View_BakeryEmployeeProduction AS
+SELECT 
+    e.employeeId,
+    e.name AS employee_name,
+    e.email,
+    e.phone,
+    e.salary,
+    r.name AS role_name,
+    b.location AS branch_location,
+    pl.productionLineId,
+    pl.productionDate,
+    pl.quantity,
+    p.bakedgoods_name
+FROM Employee e
+JOIN Roles r ON e.roleId = r.roleId
+JOIN Branches b ON e.branchId = b.branchId
+LEFT JOIN ProductionLine pl ON e.employeeId = pl.employeeId
+LEFT JOIN Products p ON pl.bakeGoodsId = p.bakedGoodsId;
+```
+![{75CB1307-1558-4960-9B4C-EA38AA628BDD}](https://github.com/user-attachments/assets/dc831894-8d48-44e2-9260-9379c9332fbf)
+
+שליפה של הנתונים מה View:
+```sql
+select * from View_BakeryEmployeeProduction;
+```
+![{2DCD1694-8860-4154-B243-E054CFA58082}](https://github.com/user-attachments/assets/bc7c2998-add4-4196-86d8-2cf2a2b507bb)
+
+שאילתות על המבטים:
+מבט ראשון:
+1.1 מאפשרת ניתוח של אילו פריטים הוזמנו על ידי כל לקוח (לפי מזהה), וכמה מכל פריט.
+
+```sql
+SELECT 
+    customer_id,
+    garment_name,
+    SUM(amount) AS total_amount_ordered
+FROM View_ClothingCustomersOrders
+GROUP BY customer_id, garment_name;
+```
+![{FAC56667-BCF2-4C43-9B1B-3B4D54DABC8B}](https://github.com/user-attachments/assets/534a0fc8-5c75-4394-a54e-599e41136487)
+
+1.2 מציגה את ההזמנה האחרונה של כל לקוח – ניתוח חשוב לעדכניות ההתקשרות עם הלקוח, או למשל כדי להחליט מתי לפנות אליו שוב.
+```sql
+SELECT v.*
+FROM View_ClothingCustomersOrders v
+WHERE order_date = (
+    SELECT MAX(order_date)
+    FROM View_ClothingCustomersOrders v2
+    WHERE v2.customer_id = v.customer_id
+);
+```
+![{3B23E034-F1ED-4BF2-9456-893A4E6A7EF5}](https://github.com/user-attachments/assets/c130318d-3c02-4a4b-9846-d0099590aafb)
 
 
+מבט שני:
+2.1 מזהה את העובדים היצרניים ביותר – כלי להערכת עובדים או לתמרוץ.
+```sql
+SELECT 
+    employeeId,
+    employee_name,
+    SUM(quantity) AS total_produced
+FROM View_BakeryEmployeeProduction
+where quantity is not null
+GROUP BY employeeId, employee_name
+ORDER BY total_produced DESC;
+```
+![{5A44BAB2-0323-4F5A-852A-77A9CC0AFFFA}](https://github.com/user-attachments/assets/bfe317d2-42a0-49c1-80de-be0e11cceb60)
 
+2.2 כמה עוגות יוצרו בכל סניף - מאפשר לראות איזה סניף מייצר יותר (מועיל לתכנון לוגיסטי, ניהול מלאי והחלטות על תגבור).
+
+```sql
+SELECT 
+    branch_location,
+    SUM(quantity) AS total_quantity
+FROM View_BakeryEmployeeProduction
+where quantity is not null
+GROUP BY branch_location;
+```
+![image](https://github.com/user-attachments/assets/830c92f0-c7cf-4444-92ff-60cd7fe4d020)
 
 
 
