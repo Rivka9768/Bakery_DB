@@ -671,44 +671,62 @@ VALUES
 ![image](https://github.com/user-attachments/assets/57804ec3-33c7-46b3-9250-b83f0740aa50)
 
 ## **PHASE 3**
-# 🧩 שילוב בסיסי נתונים – פרויקט אינטגרציה
+# **INTERGRATION WITH CLOTHING STORE DATABASE **
+*בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים: * 
 
-בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים:  
-1. בסיס נתונים של **המאפייה**  
-2. בסיס נתונים של **חנות הבגדים**
+1. בסיס נתונים של **המאפייה**
+2. 
+3. בסיס נתונים של **חנות הבגדים**
 
 ---
 
-## שלבים שביצענו
+# שלבים שביצענו:
+
 קיבלנו BACKUP לבסיס נתונים של חנות בגדים בפורמט SQL.
+
 ע"פ פקודות הcreate table ופקודות הFK יצרנו בERD פלוס דיאגרמת DSD לבסיס הנתונים שקיבלנו.
-דיאגרמת הDSD:
+
+*דיאגרמת הDSD:*
+
 ![image (34)](https://github.com/user-attachments/assets/162b0c73-7778-4bbc-989e-b430ff893f86)
 
 כעת מתוך דיאגרמת הDSD עשינו הינדוס לאחור ויצרנו דיאגרמת ERD עם הקשרים לפי Foreign Keys שהיו בטבלת הDSD.
-דיאגרמת הERD:
+
+*דיאגרמת הERD:*
 ![image (35)](https://github.com/user-attachments/assets/cccb92f7-860c-46a2-a048-cc39b0c2f6ba)
 
 כעת נותר לנו למזג את 2 הדיאגרמות על מנת ליצר בסיס נתונים משותף מ 2 הבסיסים המקוריים. הוספנו 2 ישויות חדשות: Department וPoduct.
+
 הישות Department נועדה לסמן את 2 המחלקות: מחלקת bakedgoods ומחלקת clothes - garment.
+
 הישות Product נועדה לשלב בין 2 הישויות שהיו בשני הבסיסים garment ו bakedgoods.
+
 כמוכן מיזגנו את ישות הEmployee בבסיס הנתונים המקורי עם ישות ה Employee בבסיס הנתונים שקיבלנו.
-דיאגרמת הERD המשולבת:
- 
-![image (36)](https://github.com/user-attachments/assets/7da98cf8-9967-498a-96b2-da922af477ee)
+
+*דיאגרמת הERD המשולבת:*
+
+ ![image (38)](https://github.com/user-attachments/assets/032f2491-8a20-46ba-b632-3e75fae6fb36)
+
 כעת מתוך הERD פלוס המרנו את הERD המשולב לטבלת DSD.
-דיאגרמת הDSD המשולבת:
 
-![image (37)](https://github.com/user-attachments/assets/627a43a3-d3ba-404c-a7f1-93c231bf9274)
+*דיאגרמת הDSD המשולבת:*
 
- יצירת בסיס נתונים חדש
+![image (39)](https://github.com/user-attachments/assets/5b22b5b1-cd43-4244-9e5a-482228e9ed71)
+
+
+** יצירת בסיס נתונים חדש**
+
 יצרנו בסיס נתונים חדש בשם `INTEGRATION`
- טעינת בסיס נתונים אחד
+
+*טעינת בסיס נתונים אחד:*
+
 שחזרנו לתוך בסיס הנתונים החדש את הגיבוי של בסיס הנתונים של המאפייה.
 
- טעינת בסיס נתונים נוסף
+*טעינת בסיס נתונים נוסף:*
+
 שחזרנו קובץ SQL נוסף המכיל את הנתונים של חנות הבגדים.  
 לפני ההרצה, שינינו את שם הטבלה `EMPLOYEE` ל־`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
+
 ![image](https://github.com/user-attachments/assets/b868272f-1763-42eb-b1c6-269c71513364)
 
 
@@ -719,19 +737,21 @@ VALUES
 psql --host=localhost --port=5432 --username=postgres --dbname=CLOTHES_DB --file="C:\Users\RIVKA\Downloads\dress_Backup#29.3.25.sql"
 ```
 
- יצירת טבלאות חדשות
+ *יצירת טבלאות חדשות:*
 DEPARTMENT – טבלת עזר לסיווג עובדים ומוצרים לפי מחלקה (מאפייה / חנות בגדים).
 
 PRODUCTS – טבלה מאוחדת של מוצרים, הממזגת בין BAKEDGOODS (מהמאפייה) ו־GARMENT (מהביגוד).
 
 
- מיזוג נתוני עובדים
-א. הכנת הטבלאות למיזוג
+ **מיזוג נתוני עובדים:**
+ - הכנת הטבלאות למיזוג
 הוספנו עמודה חדשה בשם DEPARTMENTID לשתי הטבלאות EMPLOYEE ו־EMPLOYEE_1:
+
 ```sql
 ALTER TABLE employee
 ADD COLUMN department_id NUMERIC 
 ```
+
 ![image (20) (1)](https://github.com/user-attachments/assets/e517c1c2-f438-46c1-bca8-0d413deb269c)
 
 
@@ -739,20 +759,25 @@ ADD COLUMN department_id NUMERIC
 ALTER TABLE employee_1
 ADD COLUMN department_id NUMERIC 
 ```
+
 ![image (19) (1)](https://github.com/user-attachments/assets/06d88eb8-dba8-492e-8b9d-6a704629242f)
 
 עדכון הערכים לפי מקור העובדים:
+
 ```sql
 UPDATE employee
 SET department_id = 1;
 ```
+
 ![image (18) (1)](https://github.com/user-attachments/assets/436f79c5-e926-4bb4-aef0-e9a06ba1ec53)
+
 
 ```sql
 UPDATE employee_1
 SET department_id = 2;
 ```
-ב. התאמת המבנה של הטבלאות
+- התאמת המבנה של הטבלאות
+- 
 הוספת עמודות חסרות לטבלה EMPLOYEE:
 
 ```sql
@@ -760,30 +785,43 @@ ALTER TABLE employee
 ADD COLUMN date_join DATE NULL,
 ADD COLUMN salary NUMERIC NULL;
 ```
+
 ![image (21) (1)](https://github.com/user-attachments/assets/a569ec2e-c6da-476e-b9d3-c26ab94592cf)
 
 הסרת הגדרת NOT NULL מעמודות קיימות:
+
 לפני:
+
 ![image (15) (1)](https://github.com/user-attachments/assets/975b4800-16d5-45b5-897b-231a106ad3cb)
 אחרי:
+
+
 ![image](https://github.com/user-attachments/assets/8a8860b5-2c58-4aa5-b928-92b22ddca2cc)
 
+
 עדכון ערכי הID של טבלת ה employee_1 כך שהעמודה employeeId יהיה יחודי:
+
 ```sql
 UPDATE employee_1
 SET employee_id = employee_id + 403
 ```
+
 ![image (14) (1)](https://github.com/user-attachments/assets/f59e223b-a37a-45bd-aedc-9a20e5cd1d9f)
-ולכן צריך גם לעדכן את ה foreign key בטבלת ה costomer_order:
+
+
+ולכן צריך גם לעדכן את ה foreign key בטבלת ה costomer_order (ביטלנו את המפתח הזר לפני העדכון של הID של העובדים):
+
 ```sql
 UPDATE customer_order
 SET employee_id = employee_id + 403
 ```
+
 ![image](https://github.com/user-attachments/assets/7679ef72-88b9-44a8-86f6-a9b15a76ede6)
 
 
 
-ג. מיזוג הנתונים בפועל
+- מיזוג הנתונים בפועל
+
 הרצנו שאילתה שמכניסה את הנתונים מ־EMPLOYEE_1 לתוך EMPLOYEE:
 
 ```sql
@@ -791,37 +829,37 @@ INSERT INTO employee (employeeid, name, email ,date_join, salary,department_id)
 SELECT employee_id, employee_name, employee_mail, date_join, salary, department_id
 FROM employee_1;
 ``
+
 ![image (13) (1)](https://github.com/user-attachments/assets/103ca777-76a8-484f-a281-75119d9efb8d)
 
+
 המיזוג הצליח!
+
 קיבלנו טבלה משולבת עם 803 שורות – פי שניים מהנתונים המקוריים.
 
 ![image (12) (1)](https://github.com/user-attachments/assets/69f822f3-ff53-44e3-811e-32aa465bcfc2)
 
+
 נעדכן את ה foreign key בטבלת ה costomer_order להיות מקושר לטבלת employee:
+
 ![image](https://github.com/user-attachments/assets/a85614bc-2d30-4cf5-b08f-4e66dc6c3da8)
 
 
-5. ניקוי סופי
+- ניקוי סופי
+
 מחיקת הטבלה employee_1
 
 
-## 6. מיזוג טבלאות המוצרים – `GARMENT` ו־`BAKEDGOODS`
+** מיזוג טבלאות המוצרים – `GARMENT` ו־`BAKEDGOODS`**
 
-### א. יצירת טבלה מאוחדת – `PRODUCTS`
+- יצירת טבלה מאוחדת – `PRODUCTS`:
 
 
-יצרנו טבלה חדשה בשם `PRODUCTS`, אשר מרכזת את הנתונים משתי טבלאות:
-- `GARMENT` (מוצרי חנות בגדים)
-- `BAKEDGOODS` (מוצרי מאפייה)
+יצרנו טבלה חדשה בשם `PRODUCTS`, אשר מרכזת את הנתונים משתי טבלאות: `GARMENT` (מוצרי חנות בגדים) & `BAKEDGOODS` (מוצרי מאפייה)
 
-הטבלה כוללת:
-- `productid` – מזהה רץ אוטומטית (`SERIAL`)
-- `departmentid` – מצביע למחלקה (מאפייה / בגדים)
-- את כל שדות `GARMENT`
-- את כל שדות `BAKEDGOODS`
+הטבלה כוללת:`productid` – מזהה רץ אוטומטית (`SERIAL`) ,`departmentid` – מצביע למחלקה (מאפייה / בגדים ,  את כל שדות `GARMENT` ,  את כל שדות `BAKEDGOODS`
 
-> כל השדות פרט ל־`productid` ו־`departmentid` הוגדרו כ־`NULLABLE`, מכיוון שאין עמודות משותפות בין שתי הישויות.
+ כל השדות פרט ל־`productid` ו־`departmentid` הוגדרו כ־`NULLABLE`, מכיוון שאין עמודות משותפות בין שתי הישויות.
 
 הגדרת `productid`כID רץ:
 
@@ -829,21 +867,27 @@ FROM employee_1;
 ALTER TABLE products
 ADD COLUMN productid SERIAL PRIMARY KEY;
 ```
+
 ![image (11) (1)](https://github.com/user-attachments/assets/85ee3638-1361-455d-8831-b9f52e682960)
 
-ב. הוספת עמודת department_id ל־GARMENT ול־BAKEDGOODS
+ 
+ - הוספת עמודת department_id ל־GARMENT ול־BAKEDGOODS
+
 הוספנו עמודה חדשה לשתי הטבלאות:
 
 ```sql
 ALTER TABLE bakedgoods
 ADD COLUMN department_id NUMERIC;
 ```
+
 ![image (10) (1)](https://github.com/user-attachments/assets/91229cf1-2f89-4bba-986a-7d9560836690)
+
 
 ```sql
 ALTER TABLE garment
 ADD COLUMN department_id NUMERIC;
 ```
+
 ![image (9) (1)](https://github.com/user-attachments/assets/930b4a7a-d7e3-439b-b996-072cae1d4bad)
 
 הגדרת ערכי department_id:
@@ -852,12 +896,15 @@ ADD COLUMN department_id NUMERIC;
 UPDATE bakedgoods
 SET department_id = 1;
 ```
+
 ![image (8) (1)](https://github.com/user-attachments/assets/e73e59a0-2ee4-4d0b-930d-e396af746a59)
+
 
 ```sql
 UPDATE garment
 SET department_id = 2;
 ```
+
 ![image (7) (1)](https://github.com/user-attachments/assets/c257e9d3-72ca-4f2f-b1ad-a1b66a76434e)
 
 
