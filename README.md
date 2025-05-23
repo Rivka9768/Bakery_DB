@@ -670,82 +670,73 @@ VALUES
 
 ![image](https://github.com/user-attachments/assets/57804ec3-33c7-46b3-9250-b83f0740aa50)
 
-## **PHASE 3**
-# **INTERGRATION WITH CLOTHING STORE DATABASE **
-*בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים: * 
+# PHASE 3
 
-1. בסיס נתונים של **המאפייה**
-2. 
-3. בסיס נתונים של **חנות הבגדים**
+## INTEGRATION WITH CLOTHING STORE DATABASE
+
+בשלב זה של הפרויקט ביצענו מיזוג בין שני בסיסי נתונים קיימים:
+
+1. בסיס נתונים של המאפייה
+2. בסיס נתונים של חנות הבגדים
 
 ---
 
-# שלבים שביצענו:
+### שלבים שביצענו
 
-קיבלנו BACKUP לבסיס נתונים של חנות בגדים בפורמט SQL.
+* קיבלנו קובץ גיבוי (Backup) של בסיס הנתונים של חנות בגדים בפורמט SQL.
+* על סמך פקודות יצירת הטבלאות (CREATE TABLE) ופקודות מפתחות זרים (FOREIGN KEY) יצרנו ב erdPlus דיאגרמת DSD.
 
-ע"פ פקודות הcreate table ופקודות הFK יצרנו בERD פלוס דיאגרמת DSD לבסיס הנתונים שקיבלנו.
-
-*דיאגרמת הDSD:*
+  *דיאגרמת הDSD:*
 
 ![image (34)](https://github.com/user-attachments/assets/162b0c73-7778-4bbc-989e-b430ff893f86)
 
-כעת מתוך דיאגרמת הDSD עשינו הינדוס לאחור ויצרנו דיאגרמת ERD עם הקשרים לפי Foreign Keys שהיו בטבלת הDSD.
+* מתוך דיאגרמת ה-DSD יצרנו דיאגרמת ERD לפי הקשרים שהוגדרו באמצעות מפתחות זרים.
 
+  
 *דיאגרמת הERD:*
 ![image (35)](https://github.com/user-attachments/assets/cccb92f7-860c-46a2-a048-cc39b0c2f6ba)
 
-כעת נותר לנו למזג את 2 הדיאגרמות על מנת ליצר בסיס נתונים משותף מ 2 הבסיסים המקוריים. הוספנו 2 ישויות חדשות: Department וPoduct.
+בהמשך:
 
-הישות Department נועדה לסמן את 2 המחלקות: מחלקת bakedgoods ומחלקת clothes - garment.
+* מיזגנו את שתי הדיאגרמות על מנת ליצור בסיס נתונים מאוחד.
+* הוספנו שתי ישויות חדשות:
 
-הישות Product נועדה לשלב בין 2 הישויות שהיו בשני הבסיסים garment ו bakedgoods.
-
-כמוכן מיזגנו את ישות הEmployee בבסיס הנתונים המקורי עם ישות ה Employee בבסיס הנתונים שקיבלנו.
-
+  * Department – לסיווג בין מחלקת מוצרי מאפייה למחלקת בגדים.
+  * Product – לשילוב בין הישויות GARMENT ו-BAKEDGOODS.
+* מיזגנו בין טבלת העובדים Employee של שתי המערכות.
+  
 *דיאגרמת הERD המשולבת:*
 
  ![image (38)](https://github.com/user-attachments/assets/032f2491-8a20-46ba-b632-3e75fae6fb36)
-
-כעת מתוך הERD פלוס המרנו את הERD המשולב לטבלת DSD.
+ 
+* כעת מתוך הERD פלוס המרנו את הERD המשולב לטבלת DSD.
 
 *דיאגרמת הDSD המשולבת:*
 
 ![image (39)](https://github.com/user-attachments/assets/5b22b5b1-cd43-4244-9e5a-482228e9ed71)
 
 
-** יצירת בסיס נתונים חדש**
+יצרנו בסיס נתונים חדש בשם `INTEGRATION`:
 
-יצרנו בסיס נתונים חדש בשם `INTEGRATION`
+* טענו לתוכו את הגיבוי של המאפייה.
+* טענו קובץ SQL נוסף של חנות הבגדים לאחר שינוי שם הטבלה `EMPLOYEE` ל-`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
 
-*טעינת בסיס נתונים אחד:*
+  ![image](https://github.com/user-attachments/assets/b868272f-1763-42eb-b1c6-269c71513364)
 
-שחזרנו לתוך בסיס הנתונים החדש את הגיבוי של בסיס הנתונים של המאפייה.
-
-*טעינת בסיס נתונים נוסף:*
-
-שחזרנו קובץ SQL נוסף המכיל את הנתונים של חנות הבגדים.  
-לפני ההרצה, שינינו את שם הטבלה `EMPLOYEE` ל־`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
-
-![image](https://github.com/user-attachments/assets/b868272f-1763-42eb-b1c6-269c71513364)
-
-
-
-הפקודה ששימשה אותנו לטעינה:
+פקודת הטעינה:
 
 ```bash
 psql --host=localhost --port=5432 --username=postgres --dbname=CLOTHES_DB --file="C:\Users\RIVKA\Downloads\dress_Backup#29.3.25.sql"
 ```
 
- *יצירת טבלאות חדשות:*
-DEPARTMENT – טבלת עזר לסיווג עובדים ומוצרים לפי מחלקה (מאפייה / חנות בגדים).
+### יצירת טבלאות חדשות
 
-PRODUCTS – טבלה מאוחדת של מוצרים, הממזגת בין BAKEDGOODS (מהמאפייה) ו־GARMENT (מהביגוד).
+* `DEPARTMENT`: טבלת עזר לסיווג עובדים ומוצרים.
+* `PRODUCTS`: טבלת מוצרים מאוחדת.
 
+### מיזוג נתוני עובדים
 
- **מיזוג נתוני עובדים:**
- - הכנת הטבלאות למיזוג
-הוספנו עמודה חדשה בשם DEPARTMENTID לשתי הטבלאות EMPLOYEE ו־EMPLOYEE_1:
+* הוספת עמודת department\_id לטבלאות העובדים:
 
 ```sql
 ALTER TABLE employee
@@ -762,7 +753,7 @@ ADD COLUMN department_id NUMERIC
 
 ![image (19) (1)](https://github.com/user-attachments/assets/06d88eb8-dba8-492e-8b9d-6a704629242f)
 
-עדכון הערכים לפי מקור העובדים:
+* עדכון ערכים בעמודת department\_id:
 
 ```sql
 UPDATE employee
@@ -776,9 +767,8 @@ SET department_id = 1;
 UPDATE employee_1
 SET department_id = 2;
 ```
-- התאמת המבנה של הטבלאות
-- 
-הוספת עמודות חסרות לטבלה EMPLOYEE:
+
+* התאמת מבנה הטבלאות:
 
 ```sql
 ALTER TABLE employee
@@ -788,7 +778,7 @@ ADD COLUMN salary NUMERIC NULL;
 
 ![image (21) (1)](https://github.com/user-attachments/assets/a569ec2e-c6da-476e-b9d3-c26ab94592cf)
 
-הסרת הגדרת NOT NULL מעמודות קיימות:
+* הסרת הגדרות NOT NULL מעמודות קיימות בטבלת employee.
 
 לפני:
 
@@ -798,8 +788,7 @@ ADD COLUMN salary NUMERIC NULL;
 
 ![image](https://github.com/user-attachments/assets/8a8860b5-2c58-4aa5-b928-92b22ddca2cc)
 
-
-עדכון ערכי הID של טבלת ה employee_1 כך שהעמודה employeeId יהיה יחודי:
+* עדכון מזהי עובדים בטבלה employee\_1:
 
 ```sql
 UPDATE employee_1
@@ -808,8 +797,7 @@ SET employee_id = employee_id + 403
 
 ![image (14) (1)](https://github.com/user-attachments/assets/f59e223b-a37a-45bd-aedc-9a20e5cd1d9f)
 
-
-ולכן צריך גם לעדכן את ה foreign key בטבלת ה costomer_order (ביטלנו את המפתח הזר לפני העדכון של הID של העובדים):
+* עדכון מזהי עובדים בטבלה customer\_order כיוון שזה מפתח זר לטבלת העובדים ( המפתח הזר בוטל לפני השינויים שנעשו בטבלת employee\_1 ):
 
 ```sql
 UPDATE customer_order
@@ -818,50 +806,30 @@ SET employee_id = employee_id + 403
 
 ![image](https://github.com/user-attachments/assets/7679ef72-88b9-44a8-86f6-a9b15a76ede6)
 
-
-
-- מיזוג הנתונים בפועל
-
-הרצנו שאילתה שמכניסה את הנתונים מ־EMPLOYEE_1 לתוך EMPLOYEE:
+* מיזוג הנתונים בפועל:
 
 ```sql
 INSERT INTO employee (employeeid, name, email ,date_join, salary,department_id)
-SELECT employee_id, employee_name, employee_mail, date_join, salary, department_id
-FROM employee_1;
-``
+SELECT employee_id, employee_name, employee_mail, date_join, salary, department_id FROM employee_1;
+```
 
 ![image (13) (1)](https://github.com/user-attachments/assets/103ca777-76a8-484f-a281-75119d9efb8d)
 
-
-המיזוג הצליח!
 
 קיבלנו טבלה משולבת עם 803 שורות – פי שניים מהנתונים המקוריים.
 
 ![image (12) (1)](https://github.com/user-attachments/assets/69f822f3-ff53-44e3-811e-32aa465bcfc2)
 
-
-נעדכן את ה foreign key בטבלת ה costomer_order להיות מקושר לטבלת employee:
+* עדכון ה foreign key בטבלת ה costomer_order להיות מקושר לטבלת employee:
 
 ![image](https://github.com/user-attachments/assets/a85614bc-2d30-4cf5-b08f-4e66dc6c3da8)
 
+* מחיקת הטבלה employee\_1 לאחר סיום המיזוג.
 
-- ניקוי סופי
+### מיזוג טבלאות המוצרים – GARMENT ו-BAKEDGOODS
 
-מחיקת הטבלה employee_1
-
-
-** מיזוג טבלאות המוצרים – `GARMENT` ו־`BAKEDGOODS`**
-
-- יצירת טבלה מאוחדת – `PRODUCTS`:
-
-
-יצרנו טבלה חדשה בשם `PRODUCTS`, אשר מרכזת את הנתונים משתי טבלאות: `GARMENT` (מוצרי חנות בגדים) & `BAKEDGOODS` (מוצרי מאפייה)
-
-הטבלה כוללת:`productid` – מזהה רץ אוטומטית (`SERIAL`) ,`departmentid` – מצביע למחלקה (מאפייה / בגדים ,  את כל שדות `GARMENT` ,  את כל שדות `BAKEDGOODS`
-
- כל השדות פרט ל־`productid` ו־`departmentid` הוגדרו כ־`NULLABLE`, מכיוון שאין עמודות משותפות בין שתי הישויות.
-
-הגדרת `productid`כID רץ:
+* יצירת טבלה PRODUCTS חדשה הכוללת את השדות משתי הטבלאות.
+* הגדרת מזהה מוצר רץ (SERIAL):
 
 ```sql
 ALTER TABLE products
@@ -870,10 +838,7 @@ ADD COLUMN productid SERIAL PRIMARY KEY;
 
 ![image (11) (1)](https://github.com/user-attachments/assets/85ee3638-1361-455d-8831-b9f52e682960)
 
- 
- - הוספת עמודת department_id ל־GARMENT ול־BAKEDGOODS
-
-הוספנו עמודה חדשה לשתי הטבלאות:
+* הוספת עמודת department\_id לשתי הטבלאות המקוריות:
 
 ```sql
 ALTER TABLE bakedgoods
@@ -890,7 +855,7 @@ ADD COLUMN department_id NUMERIC;
 
 ![image (9) (1)](https://github.com/user-attachments/assets/930b4a7a-d7e3-439b-b996-072cae1d4bad)
 
-הגדרת ערכי department_id:
+* עדכון ערכי department\_id:
 
 ```sql
 UPDATE bakedgoods
@@ -907,15 +872,14 @@ SET department_id = 2;
 
 ![image (7) (1)](https://github.com/user-attachments/assets/c257e9d3-72ca-4f2f-b1ad-a1b66a76434e)
 
-
-ג. הכנסת נתונים לטבלת PRODUCTS
-הכנסנו את הנתונים מטבלת BAKEDGOODS ו־GARMENT לטבלת PRODUCTS, כל אחד לעמודות הרלוונטיות לו כל השאר נשאר NULL:
+* הכנסת נתונים ל-`PRODUCTS`:
 
 ```sql
 INSERT INTO PRODUCTS (column1_baked, column2_baked, ..., departmentid)
 SELECT column1_baked, column2_baked, ..., 1
 FROM BAKEDGOODS;
 ```
+
 ![image (4) (1)](https://github.com/user-attachments/assets/d5945b91-1efe-4e1e-99d2-11506addf3bb)
 
 ```sql
@@ -923,39 +887,37 @@ INSERT INTO PRODUCTS (column1_garment, column2_garment, ..., departmentid)
 SELECT column1_garment, column2_garment, ..., 2
 FROM GARMENT;
 ```
+
 ![image (5) (1)](https://github.com/user-attachments/assets/58ad4dc3-cb04-4411-81bd-860e8811485d)
+
 תוצאת הכנסת הנתונים:
 ![image (2) (2)](https://github.com/user-attachments/assets/643ccc8d-44b7-4f8f-b8e4-4dec18969a77)
 
-ד. העברת קשרים (Foreign Keys)
-קשרים אל BAKEDGOODS ו־GARMENT
-כשלב ראשון הגדרת bakedgoodsid ו garmentid כUNIQUE על מנת שיוכל להיות FOREIGN KEY לטבלאות שונות:
+
+* עדכון קשרים (Foreign Keys):
+
+  * הגדרת bakedgoodsid ו-garmentid כ-UNIQUE.על מנת שיוכלו להיות FOREIGN KEY לטבלאות שונות.
+    
 ![{9AEC67A2-D412-47D0-A1DA-FCE24C7777CF}](https://github.com/user-attachments/assets/88cb607a-550e-4da8-b154-761db3476616)
 
-כל טבלה שהיה מקושר ל־bakedgoods.bakedgoodsId עודכן להפנות אל product.bakedgoodsid
+  * עדכון טבלאות להפניה אל/מ products במקום אל/מ הטבלאות המקוריות.
 
-![{3145935F-1669-4041-9540-45673DE18E88}](https://github.com/user-attachments/assets/0b387a0d-e5de-467f-a537-a7a71917e68c)
+    ![{3145935F-1669-4041-9540-45673DE18E88}](https://github.com/user-attachments/assets/0b387a0d-e5de-467f-a537-a7a71917e68c)
+    
 ![{55B17870-8949-4A30-BFE3-FE5E22420C7A}](https://github.com/user-attachments/assets/77064df6-02a9-47fd-a058-b5ddc331c2f4)
+
 ![{34F57986-D695-416F-956B-F3357B10843E}](https://github.com/user-attachments/assets/67ae54a2-2c6c-4061-a132-a464a18af0a9)
 
-
-
-טבלה purchase שהיה מקושר ל־garment.garm_id עודכן להפנות אל product.garmentid
 ![image](https://github.com/user-attachments/assets/4b7a048c-8fa0-4bf4-8208-307d298324e6)
 
-
-קשרים מתוך BAKEDGOODS ו־GARMENT
-כל קשר שהצביע מטבלאות אלו לטבלאות אחרות – עודכן לטבלה PRODUCTS, תוך שמירה על העמודות הרלוונטיות.
 ![{A58CB85D-EC8D-42B4-B19D-46C951EAE437}](https://github.com/user-attachments/assets/99831e76-b547-4184-9025-08bcb273cdf7)
 
+* מחיקת הטבלאות הישנות לאחר אימות הקשרים והנתונים.
 
- מחיקת הטבלאות הישנות:
- לאחר אימות תקינות כל הקשרים והנתונים – ניתן היה למחוק את הטבלאות המקוריות.
-וכעת כל המוצרים מוזגו לישות אחידה PRODUCTS.
+### Views – מבטים
 
+* מבט על חנות הבגדים:
 
-#מבטים - views:
-מבט על הבסיס נתונים האחר: 
 ```sql
 CREATE VIEW View_ClothingCustomersOrders AS
 SELECT 
@@ -972,15 +934,48 @@ JOIN customer_order co ON c.customer_id = co.customer_id
 JOIN purchase pu ON co.order_id = pu.order_id
 JOIN Products p ON pu.garm_id = p.garment_id;
 ```
+
 ![image](https://github.com/user-attachments/assets/51d407dd-6b50-4c52-8b3b-c1460a1671b4)
 
-שליפה של הנתונים מה View:
+* שליפת נתונים מהמבט:
+  
 ```sql
 select * from View_ClothingCustomersOrders;
 ```
 ![{7C2132E2-0DBF-4102-AF30-06085236C1C8}](https://github.com/user-attachments/assets/dcdf5509-15b6-45c8-b02a-adeee0119ba4)
 
-מבט על בסיס הנתונים המקורי:
+* שאילתות על המבט:
+
+  *שאילתא 1 -  מאפשרת ניתוח של אילו פריטים הוזמנו על ידי כל לקוח (לפי מזהה), וכמה מכל פריט.*
+  
+```sql
+SELECT 
+    customer_id,
+    garment_name,
+    SUM(amount) AS total_amount_ordered
+FROM View_ClothingCustomersOrders
+GROUP BY customer_id, garment_name;
+```
+
+![{FAC56667-BCF2-4C43-9B1B-3B4D54DABC8B}](https://github.com/user-attachments/assets/534a0fc8-5c75-4394-a54e-599e41136487)
+
+  *שאילתא 2 - מציגה את ההזמנה האחרונה של כל לקוח – ניתוח חשוב לעדכניות ההתקשרות עם הלקוח, או למשל כדי להחליט מתי לפנות אליו שוב.*
+
+  
+```sql
+SELECT v.*
+FROM View_ClothingCustomersOrders v
+WHERE order_date = (
+    SELECT MAX(order_date)
+    FROM View_ClothingCustomersOrders v2
+    WHERE v2.customer_id = v.customer_id
+);
+```
+
+![{3B23E034-F1ED-4BF2-9456-893A4E6A7EF5}](https://github.com/user-attachments/assets/c130318d-3c02-4a4b-9846-d0099590aafb)
+
+* מבט על המאפייה:
+
 ```sql
 CREATE VIEW View_BakeryEmployeeProduction AS
 SELECT 
@@ -1001,43 +996,21 @@ JOIN Branches b ON e.branchId = b.branchId
 LEFT JOIN ProductionLine pl ON e.employeeId = pl.employeeId
 LEFT JOIN Products p ON pl.bakeGoodsId = p.bakedGoodsId;
 ```
+
 ![{75CB1307-1558-4960-9B4C-EA38AA628BDD}](https://github.com/user-attachments/assets/dc831894-8d48-44e2-9260-9379c9332fbf)
 
-שליפה של הנתונים מה View:
+* שליפת נתונים מהמבט:
+
 ```sql
 select * from View_BakeryEmployeeProduction;
 ```
+
 ![{2DCD1694-8860-4154-B243-E054CFA58082}](https://github.com/user-attachments/assets/bc7c2998-add4-4196-86d8-2cf2a2b507bb)
 
-שאילתות על המבטים:
-מבט ראשון:
-1.1 מאפשרת ניתוח של אילו פריטים הוזמנו על ידי כל לקוח (לפי מזהה), וכמה מכל פריט.
+* שאילתות על המבט:
 
-```sql
-SELECT 
-    customer_id,
-    garment_name,
-    SUM(amount) AS total_amount_ordered
-FROM View_ClothingCustomersOrders
-GROUP BY customer_id, garment_name;
-```
-![{FAC56667-BCF2-4C43-9B1B-3B4D54DABC8B}](https://github.com/user-attachments/assets/534a0fc8-5c75-4394-a54e-599e41136487)
+  *שאילתא 1 - מזהה את העובדים היצרניים ביותר – כלי להערכת עובדים או לתמרוץ.*
 
-1.2 מציגה את ההזמנה האחרונה של כל לקוח – ניתוח חשוב לעדכניות ההתקשרות עם הלקוח, או למשל כדי להחליט מתי לפנות אליו שוב.
-```sql
-SELECT v.*
-FROM View_ClothingCustomersOrders v
-WHERE order_date = (
-    SELECT MAX(order_date)
-    FROM View_ClothingCustomersOrders v2
-    WHERE v2.customer_id = v.customer_id
-);
-```
-![{3B23E034-F1ED-4BF2-9456-893A4E6A7EF5}](https://github.com/user-attachments/assets/c130318d-3c02-4a4b-9846-d0099590aafb)
-
-
-מבט שני:
-2.1 מזהה את העובדים היצרניים ביותר – כלי להערכת עובדים או לתמרוץ.
 ```sql
 SELECT 
     employeeId,
@@ -1050,9 +1023,10 @@ ORDER BY total_produced DESC;
 ```
 ![{5A44BAB2-0323-4F5A-852A-77A9CC0AFFFA}](https://github.com/user-attachments/assets/bfe317d2-42a0-49c1-80de-be0e11cceb60)
 
-2.2 כמה עוגות יוצרו בכל סניף - מאפשר לראות איזה סניף מייצר יותר (מועיל לתכנון לוגיסטי, ניהול מלאי והחלטות על תגבור).
 
-```sql
+  *שאילתא 2 - כמה עוגות יוצרו בכל סניף - מאפשר לראות איזה סניף מייצר יותר (מועיל לתכנון לוגיסטי, ניהול מלאי והחלטות על תגבור).*
+
+  ```sql
 SELECT 
     branch_location,
     SUM(quantity) AS total_quantity
@@ -1061,6 +1035,10 @@ where quantity is not null
 GROUP BY branch_location;
 ```
 ![image](https://github.com/user-attachments/assets/830c92f0-c7cf-4444-92ff-60cd7fe4d020)
+
+  
+---
+
 
 
 
