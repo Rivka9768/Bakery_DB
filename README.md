@@ -871,9 +871,9 @@ SET department_id = 2;
 * הכנסת נתונים ל-`PRODUCTS`:
 
 ```sql
-INSERT INTO PRODUCTS (column1_baked, column2_baked, ..., departmentid)
-SELECT column1_baked, column2_baked, ..., 1
-FROM BAKEDGOODS;
+INSERT INTO products (bakedgoodsid, bakedgoods_name, bakedgoods_lifetime , bakedgoods_allergeninfo, bakedgoods_categ_id, department_id)
+SELECT *
+FROM bakedgoods;
 ```
 
 ![image (4) (1)](https://github.com/user-attachments/assets/d5945b91-1efe-4e1e-99d2-11506addf3bb)
