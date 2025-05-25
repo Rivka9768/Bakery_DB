@@ -715,7 +715,7 @@ VALUES
 ![image (39)](https://github.com/user-attachments/assets/5b22b5b1-cd43-4244-9e5a-482228e9ed71)
 
 
-יצרנו בסיס נתונים חדש בשם `INTEGRATION`:
+יצרנו בסיס נתונים חדש בשם INTEGRATION:
 * טענו לתוכו את הגיבוי של המאפייה.
 * טענו קובץ SQL נוסף של חנות הבגדים לאחר שינוי שם הטבלה `EMPLOYEE` ל-`EMPLOYEE_1` כדי למנוע התנגשות עם טבלה קיימת.
 
