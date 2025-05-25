@@ -879,9 +879,9 @@ FROM BAKEDGOODS;
 ![image (4) (1)](https://github.com/user-attachments/assets/d5945b91-1efe-4e1e-99d2-11506addf3bb)
 
 ```sql
-INSERT INTO PRODUCTS (column1_garment, column2_garment, ..., departmentid)
-SELECT column1_garment, column2_garment, ..., 2
-FROM GARMENT;
+INSERT INTO products (garment_name, garment_quantity_in_stock, garment_price , garment_id, garment_supplierID, garment_categoryId, department_id)
+SELECT *
+FROM garment;
 ```
 
 ![image (5) (1)](https://github.com/user-attachments/assets/58ad4dc3-cb04-4411-81bd-860e8811485d)
