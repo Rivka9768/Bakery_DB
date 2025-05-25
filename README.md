@@ -686,7 +686,7 @@ VALUES
 * קיבלנו קובץ גיבוי (Backup) של בסיס הנתונים של חנות בגדים בפורמט SQL.
 * על סמך פקודות יצירת הטבלאות (CREATE TABLE) ופקודות מפתחות זרים (FOREIGN KEY) יצרנו ב erdPlus דיאגרמת DSD.
 
-  *דיאגרמת הDSD:*
+*דיאגרמת הDSD:*
 
 ![image (34)](https://github.com/user-attachments/assets/162b0c73-7778-4bbc-989e-b430ff893f86)
 
@@ -902,7 +902,7 @@ FROM GARMENT;
 
   * עדכון טבלאות להפניה אל/מ products במקום אל/מ הטבלאות המקוריות.
 
-    ![{3145935F-1669-4041-9540-45673DE18E88}](https://github.com/user-attachments/assets/0b387a0d-e5de-467f-a537-a7a71917e68c)
+![{3145935F-1669-4041-9540-45673DE18E88}](https://github.com/user-attachments/assets/0b387a0d-e5de-467f-a537-a7a71917e68c)
     
 ![{55B17870-8949-4A30-BFE3-FE5E22420C7A}](https://github.com/user-attachments/assets/77064df6-02a9-47fd-a058-b5ddc331c2f4)
 
