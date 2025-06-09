@@ -1,4 +1,3 @@
---1
 
 CREATE OR REPLACE PROCEDURE assign_employees_to_shift(
   p_branchId NUMERIC,
