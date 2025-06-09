@@ -1056,7 +1056,7 @@ GROUP BY branch_location;
 
 ### ⚙️ [ניהול משמרות](#ניהול-משמרות)
 - [1. יצירת טבלת Shifts](#1-יצירת-טבלת-shifts)
-- [2. יצירת טבלת EmployeeShifts](#2-טבלת-employeeshifts)
+- [2. יצירת טבלת EmployeeShifts](#2-יצירת-טבלת-employeeshifts)
 - [3. פונקציה get_unassigned_employees](#3-פונקציה-get_unassigned_employees)
 - [4. טריגר: הודעה על שיבוץ עובד](#4-טריגר-הודעה-על-שיבוץ-עובד)
 - [5. פרוצדורה assign_employees_to_shift](#5-פרוצדורה-assign_employees_to_shift)
@@ -1068,11 +1068,12 @@ GROUP BY branch_location;
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
 - [10. בדיקה: הכנסת עובד חדש](#10-בדיקה-הכנסת-עובד-חדש)
 
-- ### 📝 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
+### 🥐 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
 - [12. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
 - [13. פרוצדורה produce_batch](#13-פרוצדורה-produce_batch)
 - [14. טריגר log_allergen_warning](#14-טריגר-log_allergen_warning)
 - [15. תוכנית ראשית](#15-תוכנית-ראשית)
+
 
 
 # ניהול משמרות
