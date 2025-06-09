@@ -1068,6 +1068,14 @@ GROUP BY branch_location;
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
 - [10. בדיקה: הכנסת עובד חדש](#10-בדיקה-הכנסת-עובד-חדש)
 
+- 
+
+- ### 📝 [ניהול ייצור של מאפים וטריגר](#ניהול_מאפים)
+- [12. פונקציה get_materials_summary_for_product](#12- פונקציה get_materials_summary_for_product)
+- [13.פרוצדורה produce_batch](#8-פונקציית-טריגר-log_changes_function)
+- [14.טריגר log_allergen_warning](#9-טריגרים-לכל-טבלה)
+- [15. תוכנית ראשית](#10-בדיקה-הכנסת-עובד-חדש)
+
 # ניהול משמרות
 
 ## 1. יצירת טבלת Shifts
@@ -1501,6 +1509,282 @@ VALUES (500, 'Test Tester', '050-0000000', 'test@example.com', '1995-01-01', 1, 
 <img width="572" alt="unnamed" src="https://github.com/user-attachments/assets/76cc2611-3d82-4f32-96af-b9c5e4d45cd9" />
 
 <img width="778" alt="unnamed" src="https://github.com/user-attachments/assets/28bd1764-68e2-4066-a301-dd3b92b29829" />
+
+### 12 - פונקציה get_materials_summary_for_product
+הפונקציה נועדה להחזיר דו"ח על מצב חומרי הגלם הדרושים לייצור מוצר אפוי מסוים, לפי מזהה (baked_id). היא בודקת האם יש מספיק מלאי זמין לכל חומר גלם שנדרש לפי המתכון, ומחזירה טבלה זמנית הכוללת את שמות החומרים, הכמות הנדרשת, הכמות הזמינה, ומצבם ("OK" אם יש מספיק, "LOW" אם חסר).
+
+### קוד הפונקציה:
+```sql
+CREATE OR REPLACE FUNCTION get_materials_summary_for_product(baked_id INT)
+RETURNS refcursor AS $$
+DECLARE
+    ref refcursor;
+    rec RECORD;
+    available_qty NUMERIC;
+    temp_table TEXT := 'temp_material_status';
+BEGIN
+    
+    EXECUTE format('DROP TABLE IF EXISTS %I', temp_table);
+    EXECUTE format('CREATE TEMP TABLE %I (name TEXT, required NUMERIC, available NUMERIC, status TEXT)', temp_table);
+
+    FOR rec IN
+        SELECT rm.name, r.materialQuantity AS required, rm.quantity AS available
+        FROM Recipe r
+        JOIN RawMaterials rm ON r.RawMaterialsId = rm.RawMaterialsId
+        WHERE r.bakeGoodsId = baked_id
+    LOOP
+        INSERT INTO temp_material_status(name, required, available, status)
+        VALUES (
+            rec.name,
+            rec.required,
+            rec.available,
+            CASE
+                WHEN rec.available >= rec.required THEN 'OK'
+                ELSE 'LOW'
+            END
+        );
+    END LOOP;
+
+    OPEN ref FOR EXECUTE format('SELECT * FROM %I', temp_table);
+    RETURN ref;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error: %', SQLERRM;
+        RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+### יצירת פונקציה:
+
+![image](https://github.com/user-attachments/assets/097f26b3-9c40-44b2-b3ef-a37c601f1f3e)
+
+### הרצה:
+
+![image](https://github.com/user-attachments/assets/914618ab-4091-40aa-9e59-454823fd89fe)
+
+
+### דוגמא להרצה שנכשלה:
+
+![image](https://github.com/user-attachments/assets/6280a1a4-48e2-4781-ba59-9562e2df690a)
+
+
+
+### 13 - פרוצדורה produce_batch :
+
+הפרוצדורה מבצעת הפקה של סדרת ייצור (Batch) של מוצר אפוי בכמות מסוימת. היא בודקת האם יש מספיק חומרי גלם לפי המתכון, מעדכנת את המלאי, ורושמת את הפעולה בטבלת הייצור (ProductionLine). אם אין מספיק חומרי גלם – היא זורקת חריגה.
+
+### קוד:
+
+```sql
+CREATE OR REPLACE PROCEDURE produce_batch(
+    p_baked_id INT,
+    p_quantity INT,
+    p_employee_id INT,
+    p_branch_id INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    rec RECORD;
+    needed NUMERIC;
+    available NUMERIC;
+BEGIN
+    FOR rec IN SELECT * FROM Recipe WHERE bakeGoodsId = p_baked_id LOOP
+        needed := rec.materialQuantity * p_quantity;
+
+        SELECT quantity INTO available
+        FROM RawMaterials
+        WHERE RawMaterialsId = rec.RawMaterialsId;
+
+        IF available IS NULL THEN
+            RAISE EXCEPTION 'Raw material % not found.', rec.RawMaterialsId;
+        ELSIF available < needed THEN
+            RAISE EXCEPTION 'Not enough material %: needed %, available %',
+                rec.RawMaterialsId, needed, available;
+        END IF;
+    END LOOP;
+
+
+    FOR rec IN SELECT * FROM Recipe WHERE bakeGoodsId = p_baked_id LOOP
+        UPDATE RawMaterials
+        SET quantity = quantity - (rec.materialQuantity * p_quantity)
+        WHERE RawMaterialsId = rec.RawMaterialsId;
+    END LOOP;
+
+   
+    INSERT INTO ProductionLine (bakeGoodsId, quantity, employeeId, productionDate)
+    VALUES (p_baked_id, p_quantity, p_employee_id, CURRENT_DATE);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Production failed: %', SQLERRM;
+END;
+$$;
+```
+
+
+ ### יצירת הפרוצדורה:
+
+ 
+ ![image](https://github.com/user-attachments/assets/50335e9f-df3c-48a3-966a-531867d68177)
+
+### הרצה:
+
+
+![image](https://github.com/user-attachments/assets/1c684da6-aa94-4513-a927-dfbe0c326ab4)
+
+
+
+### הטבלה Recipe לפני:
+
+
+![image](https://github.com/user-attachments/assets/f90dd914-c7b6-400d-a161-06ab976adffb)
+
+
+
+### הטבלה Recipe אחרי: 
+
+
+![image](https://github.com/user-attachments/assets/2e87d94a-b969-473e-a1b3-bdc48d5f1374)
+
+
+### דוגמא להרצה שנכשלה:
+
+
+![image](https://github.com/user-attachments/assets/b9bddbea-5eab-4f39-b6db-55ef7789ccfe)
+
+
+### 14 - טריגר log_allergen_warning :
+
+מעקב אחר מוצרים חדשים המכילים מידע על אלרגנים. בכל פעם שנוסף מוצר חדש לטבלת BakedGoods, אם יש בו מידע על אלרגנים, נשמרת על כך רשומה בטבלת AllergenLog.
+
+### הוספת טבלת AllergenLog:
+#### קוד:
+```sql
+CREATE TABLE IF NOT EXISTS AllergenLog (
+    log_id SERIAL PRIMARY KEY,
+    bakedGoodsId INT,
+    allergenInfo TEXT,
+    log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    note TEXT
+);
+```
+
+### קוד הטריגר: 
+
+
+```sql
+CREATE OR REPLACE FUNCTION log_allergen_warning()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.allergenInfo IS NOT NULL AND length(trim(NEW.allergenInfo)) > 0 THEN
+        INSERT INTO AllergenLog(bakedGoodsId, allergenInfo, note)
+        VALUES (
+            NEW.bakedGoodsId,
+            NEW.allergenInfo,
+            'Product contains allergen information'
+        );
+    END IF;
+
+    RETURN NEW;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Failed to log allergen info for product %: %', NEW.bakedGoodsId, SQLERRM;
+        RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_log_allergen
+AFTER INSERT ON BakedGoods
+FOR EACH ROW
+EXECUTE FUNCTION log_allergen_warning();
+
+```
+
+
+
+### יצירת הטריגר:
+
+![image](https://github.com/user-attachments/assets/4ee1480d-1121-436b-98fd-519ab7972b8f)
+
+
+### הרצה:
+
+
+![image](https://github.com/user-attachments/assets/230f7069-b00f-4393-93e6-f776fdb7b44b)
+
+
+### 15 - תוכנית ראשית :
+
+בלוק DO שמבצע הרצת תהליך מלא של:
+
+בדיקת זמינות חומרי גלם עבור מוצר מסוים (באמצעות פונקציה שמחזירה refcursor)
+
+הדפסת המידע של כל חומר גלם (כמות נדרשת, זמינה, סטטוס)
+
+קריאה לפרוצדורת ייצור (הפקת אצווה של מוצר)
+
+הדפסת הודעת הצלחה או שגיאה בהתאם - מפורט בפונקציה ובפרוצדורה בנפרד.
+
+### 🔧 בדיקה והרצה של תהליך ייצור מלא
+
+הקוד הבא מבצע תהליך מלא הכולל בדיקת זמינות חומרי גלם והרצת ייצור בפועל. נועד לצורכי בדיקות ושימוש תפעולי.
+
+#### קוד:
+```sql
+DO $$
+DECLARE
+    ref refcursor;
+    rec RECORD;
+BEGIN
+    RAISE NOTICE '--- בדיקת זמינות חומרי גלם למוצר 1 ---';
+
+    -- שלב 1: קריאה לפונקציה שמחזירה RefCursor
+    ref := get_materials_summary_for_product(1);
+
+    LOOP
+        FETCH ref INTO rec;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE 'חומר: %, נדרש: %, קיים: %, סטטוס: %',
+            rec.name, rec.required, rec.available, rec.status;
+    END LOOP;
+
+    CLOSE ref;
+
+    RAISE NOTICE '--- הרצת ייצור אצווה של מוצר 1 בכמות 5 ---';
+
+    -- שלב 2: קריאה לפרוצדורה לייצור אצווה
+    CALL produce_batch(
+        p_baked_id := 1,
+        p_quantity := 5,
+        p_employee_id := 2,
+        p_branch_id := 1
+    );
+
+    RAISE NOTICE '✅ ההפקה הושלמה בהצלחה';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE '❌ שגיאה בתהליך: %', SQLERRM;
+END;
+$$;
+```
+
+
+### הרצה:
+
+![image](https://github.com/user-attachments/assets/8a8b6913-2914-4014-b80e-d4acb89a7cbe)
+
+
+
+
+
+
+
+
 
 
 ---
