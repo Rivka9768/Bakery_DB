@@ -30,3 +30,12 @@ CREATE TABLE LogChanges (
   newData JSONB
 );
 
+--4
+
+CREATE TABLE IF NOT EXISTS AllergenLog (
+    log_id SERIAL PRIMARY KEY,
+    bakedGoodsId INT,
+    allergenInfo TEXT,
+    log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    note TEXT
+);
