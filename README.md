@@ -1056,7 +1056,7 @@ GROUP BY branch_location;
 
 ### ⚙️ [ניהול משמרות](#ניהול-משמרות)
 - [1. יצירת טבלת Shifts](#1-יצירת-טבלת-shifts)
-- [2. יצירת טבלת EmployeeShifts](#2-טבלת-employeeshifts)
+- [2. יצירת טבלת EmployeeShifts](#2-יצירת-טבלת-employeeshifts)
 - [3. פונקציה get_unassigned_employees](#3-פונקציה-get_unassigned_employees)
 - [4. טריגר: הודעה על שיבוץ עובד](#4-טריגר-הודעה-על-שיבוץ-עובד)
 - [5. פרוצדורה assign_employees_to_shift](#5-פרוצדורה-assign_employees_to_shift)
@@ -1066,7 +1066,7 @@ GROUP BY branch_location;
 - [7. יצירת טבלת לוג כללית LogChanges](#7-יצירת-טבלת-לוג-כללית-logchanges)
 - [8. פונקציית טריגר log_changes_function](#8-פונקציית-טריגר-log_changes_function)
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
-- [10. בדיקה: הכנסת עובד חדש](#10-בדיקה-הכנסת-עובד-חדש)
+- [10. בדיקה: הכנסת עובד חדש](#10-בדיקה:-הכנסת-עובד-חדש)
 
 ### 🥐 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
 - [12. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
@@ -1515,6 +1515,8 @@ VALUES (500, 'Test Tester', '050-0000000', 'test@example.com', '1995-01-01', 1, 
 <img width="572" alt="unnamed" src="https://github.com/user-attachments/assets/76cc2611-3d82-4f32-96af-b9c5e4d45cd9" />
 
 <img width="778" alt="unnamed" src="https://github.com/user-attachments/assets/28bd1764-68e2-4066-a301-dd3b92b29829" />
+
+---
 
 ### 12 - פונקציה get_materials_summary_for_product
 הפונקציה נועדה להחזיר דו"ח על מצב חומרי הגלם הדרושים לייצור מוצר אפוי מסוים, לפי מזהה (baked_id). היא בודקת האם יש מספיק מלאי זמין לכל חומר גלם שנדרש לפי המתכון, ומחזירה טבלה זמנית הכוללת את שמות החומרים, הכמות הנדרשת, הכמות הזמינה, ומצבם ("OK" אם יש מספיק, "LOW" אם חסר).
