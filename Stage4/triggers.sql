@@ -19,6 +19,32 @@ EXECUTE FUNCTION trg_notify_employee_assigned();
 
 --2
 
+CREATE OR REPLACE FUNCTION log_changes_function()
+RETURNS TRIGGER AS
+$$
+BEGIN
+  INSERT INTO LogChanges (
+    tableName,
+    operation,
+    changedBy,
+    changeTime,
+    oldData,
+    newData
+  )
+  VALUES (
+    TG_TABLE_NAME,
+    TG_OP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CASE WHEN TG_OP = 'INSERT' THEN NULL ELSE to_jsonb(OLD) END,
+    CASE WHEN TG_OP = 'DELETE' THEN NULL ELSE to_jsonb(NEW) END
+  );
+
+  RETURN NULL; -- For AFTER triggers
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- Branches
 CREATE TRIGGER log_branches_trigger
 AFTER INSERT OR UPDATE OR DELETE ON Branches
