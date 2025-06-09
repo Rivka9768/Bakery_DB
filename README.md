@@ -1068,11 +1068,11 @@ GROUP BY branch_location;
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
 - [10. בדיקת הכנסת עובד חדש](#10-בדיקת-הכנסת-עובד-חדש)
 
-### 🥐 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
-- [11. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
-- [12. פרוצדורה produce_batch](#13-פרוצדורה-produce_batch)
-- [13. טריגר log_allergen_warning](#14-טריגר-log_allergen_warning)
-- [14. תוכנית ראשית](#15-תוכנית-ראשית)
+### 🥐 [ניהול ייצור של מאפים](#ניהול-ייצור-של-מאפים)
+- [11. פונקציה get_materials_summary_for_product](#11-פונקציה-get_materials_summary_for_product)
+- [12. פרוצדורה produce_batch](#12-פרוצדורה-produce_batch)
+- [13. טריגר log_allergen_warning](#13-טריגר-log_allergen_warning)
+- [14. תוכנית ראשית](#14-תוכנית-ראשית)
 
 
 
@@ -1517,6 +1517,8 @@ VALUES (500, 'Test Tester', '050-0000000', 'test@example.com', '1995-01-01', 1, 
 <img width="778" alt="unnamed" src="https://github.com/user-attachments/assets/28bd1764-68e2-4066-a301-dd3b92b29829" />
 
 ---
+
+# ניהול ייצור של מאפים
 
 ### 11. פונקציה get_materials_summary_for_product
 הפונקציה נועדה להחזיר דו"ח על מצב חומרי הגלם הדרושים לייצור מוצר אפוי מסוים, לפי מזהה (baked_id). היא בודקת האם יש מספיק מלאי זמין לכל חומר גלם שנדרש לפי המתכון, ומחזירה טבלה זמנית הכוללת את שמות החומרים, הכמות הנדרשת, הכמות הזמינה, ומצבם ("OK" אם יש מספיק, "LOW" אם חסר).
