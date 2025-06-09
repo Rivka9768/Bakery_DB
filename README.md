@@ -1066,13 +1066,13 @@ GROUP BY branch_location;
 - [7. יצירת טבלת לוג כללית LogChanges](#7-יצירת-טבלת-לוג-כללית-logchanges)
 - [8. פונקציית טריגר log_changes_function](#8-פונקציית-טריגר-log_changes_function)
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
-- [10. בדיקה: הכנסת עובד חדש](#10-בדיקה:-הכנסת-עובד-חדש)
+- [10. בדיקת הכנסת עובד חדש](#10-בדיקת-הכנסת-עובד-חדש)
 
 ### 🥐 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
-- [12. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
-- [13. פרוצדורה produce_batch](#13-פרוצדורה-produce_batch)
-- [14. טריגר log_allergen_warning](#14-טריגר-log_allergen_warning)
-- [15. תוכנית ראשית](#15-תוכנית-ראשית)
+- [11. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
+- [12. פרוצדורה produce_batch](#13-פרוצדורה-produce_batch)
+- [13. טריגר log_allergen_warning](#14-טריגר-log_allergen_warning)
+- [14. תוכנית ראשית](#15-תוכנית-ראשית)
 
 
 
@@ -1499,7 +1499,7 @@ FOR EACH ROW EXECUTE FUNCTION log_changes_function();
 
 ---
 
-## 11. בדיקה: הכנסת עובד חדש
+## 10. בדיקת הכנסת עובד חדש
 
 ### תיאור:
 
@@ -1518,7 +1518,7 @@ VALUES (500, 'Test Tester', '050-0000000', 'test@example.com', '1995-01-01', 1, 
 
 ---
 
-### 12. פונקציה get_materials_summary_for_product
+### 11. פונקציה get_materials_summary_for_product
 הפונקציה נועדה להחזיר דו"ח על מצב חומרי הגלם הדרושים לייצור מוצר אפוי מסוים, לפי מזהה (baked_id). היא בודקת האם יש מספיק מלאי זמין לכל חומר גלם שנדרש לפי המתכון, ומחזירה טבלה זמנית הכוללת את שמות החומרים, הכמות הנדרשת, הכמות הזמינה, ומצבם ("OK" אם יש מספיק, "LOW" אם חסר).
 
 ### קוד הפונקציה:
@@ -1577,9 +1577,9 @@ $$ LANGUAGE plpgsql;
 
 ![image](https://github.com/user-attachments/assets/6280a1a4-48e2-4781-ba59-9562e2df690a)
 
+---
 
-
-### 13. פרוצדורה produce_batch :
+### 12. פרוצדורה produce_batch
 
 הפרוצדורה מבצעת הפקה של סדרת ייצור (Batch) של מוצר אפוי בכמות מסוימת. היא בודקת האם יש מספיק חומרי גלם לפי המתכון, מעדכנת את המלאי, ורושמת את הפעולה בטבלת הייצור (ProductionLine). אם אין מספיק חומרי גלם – היא זורקת חריגה.
 
@@ -1663,8 +1663,9 @@ $$;
 
 ![image](https://github.com/user-attachments/assets/b9bddbea-5eab-4f39-b6db-55ef7789ccfe)
 
+---
 
-### 14. טריגר log_allergen_warning :
+### 13. טריגר log_allergen_warning
 
 מעקב אחר מוצרים חדשים המכילים מידע על אלרגנים. בכל פעם שנוסף מוצר חדש לטבלת BakedGoods, אם יש בו מידע על אלרגנים, נשמרת על כך רשומה בטבלת AllergenLog.
 
@@ -1724,8 +1725,9 @@ EXECUTE FUNCTION log_allergen_warning();
 
 ![image](https://github.com/user-attachments/assets/230f7069-b00f-4393-93e6-f776fdb7b44b)
 
+---
 
-### 15. תוכנית ראשית :
+### 14. תוכנית ראשית
 
 בלוק DO שמבצע הרצת תהליך מלא של:
 
