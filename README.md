@@ -1307,6 +1307,11 @@ $$ LANGUAGE plpgsql;
 
 <img width="223" alt="unnamed" src="https://github.com/user-attachments/assets/12d2d7d9-fa16-4d55-bde1-ebfd8d86866e" />
 
+התוכנית זרקה חריגה מהפרוצדורה:
+
+<img width="614" alt="image" src="https://github.com/user-attachments/assets/59c4b45f-980b-486e-b706-140458835438" />
+
+
 ---
 # לוגים על פעולות CRUD
 
