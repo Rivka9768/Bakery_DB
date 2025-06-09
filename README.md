@@ -1068,13 +1068,12 @@ GROUP BY branch_location;
 - [9. טריגרים לכל טבלה](#9-טריגרים-לכל-טבלה)
 - [10. בדיקה: הכנסת עובד חדש](#10-בדיקה-הכנסת-עובד-חדש)
 
-- 
+- ### 📝 [ניהול ייצור של מאפים וטריגר](#ניהול-ייצור-של-מאפים-וטריגר)
+- [12. פונקציה get_materials_summary_for_product](#12-פונקציה-get_materials_summary_for_product)
+- [13. פרוצדורה produce_batch](#13-פרוצדורה-produce_batch)
+- [14. טריגר log_allergen_warning](#14-טריגר-log_allergen_warning)
+- [15. תוכנית ראשית](#15-תוכנית-ראשית)
 
-- ### 📝 [ניהול ייצור של מאפים וטריגר](#ניהול_מאפים)
-- [12. פונקציה get_materials_summary_for_product](#12- פונקציה get_materials_summary_for_product)
-- [13.פרוצדורה produce_batch](#8-פונקציית-טריגר-log_changes_function)
-- [14.טריגר log_allergen_warning](#9-טריגרים-לכל-טבלה)
-- [15. תוכנית ראשית](#10-בדיקה-הכנסת-עובד-חדש)
 
 # ניהול משמרות
 
