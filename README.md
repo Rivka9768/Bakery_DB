@@ -1048,7 +1048,9 @@ GROUP BY branch_location;
 7. יצירת טבלת לוג LogChanges
 8. פונקציית טריגר log\_changes\_function
 9. טריגרים לכל טבלה
-10. בדיקה: הכנסת עובד חדש
+10. טריגרים לכל טבלה: קוד מלא
+11. חשיבות הלוגים לפעולות CRUD
+12. בדיקה: הכנסת עובד חדש
 
 ---
 
@@ -1189,16 +1191,13 @@ DECLARE
   v_required_count INT;
   v_employee RECORD;
 BEGIN
-  -- יצירת המשמרת
   INSERT INTO Shifts(branchId, shiftDate, shiftTime)
   VALUES (p_branch_id, p_shift_date, p_shift_time)
   RETURNING shiftId INTO v_shift_id;
 
-  -- מספר עובדים נדרש מהטבלה Branches
   SELECT minEmployeesRequired INTO v_required_count
   FROM Branches WHERE branchId = p_branch_id;
 
-  -- איטרציה על עובדים זמינים
   FOR v_employee IN
     SELECT * FROM get_unassigned_employees(p_branch_id, p_shift_date, p_shift_time, p_role_id)
     LIMIT v_required_count
@@ -1213,8 +1212,6 @@ $$;
 ```
 
 ### הוכחה להרצה תקינה:
-
-בוצע קריאה לפרוצדורה והודעת הצלחה התקבלה:
 
 ```
 NOTICE: Shift 23 successfully filled with 3 employees.
@@ -1233,13 +1230,11 @@ DO $$
 DECLARE
   r RECORD;
 BEGIN
-  -- הדפסת עובדים זמינים
   FOR r IN SELECT * FROM get_unassigned_employees(1, CURRENT_DATE, 'morning', 2)
   LOOP
     RAISE NOTICE 'Employee available for a shift assignment: %', r.name;
   END LOOP;
 
-  -- קריאה לפרוצדורה לשיבוץ
   CALL assign_employees_to_shift(1, CURRENT_DATE, 'morning', 2);
 END;
 $$;
@@ -1250,7 +1245,6 @@ $$;
 ```
 NOTICE: Employee available for a shift assignment: שיר לוי
 NOTICE: Employee available for a shift assignment: נועם פרץ
-...
 NOTICE: Shift 24 successfully filled with 2 employees.
 ```
 
@@ -1306,8 +1300,6 @@ $$ LANGUAGE plpgsql;
 
 ### הוכחה להרצה תקינה:
 
-לאחר שינוי בטבלת Employee נוצר רישום בטבלת LogChanges:
-
 ```json
 {
   "operation": "UPDATE",
@@ -1326,9 +1318,28 @@ $$ LANGUAGE plpgsql;
 כל טבלה מקבלת טריגר אשר מפעיל את `log_changes_function` על פעולות INSERT/UPDATE/DELETE.
 
 ```sql
--- דוגמה לטבלה אחת:
 CREATE TRIGGER log_employee_trigger
 AFTER INSERT OR UPDATE OR DELETE ON Employee
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+
+CREATE TRIGGER log_shift_trigger
+AFTER INSERT OR UPDATE OR DELETE ON Shifts
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+
+CREATE TRIGGER log_employee_shift_trigger
+AFTER INSERT OR UPDATE OR DELETE ON EmployeeShifts
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+
+CREATE TRIGGER log_branch_trigger
+AFTER INSERT OR UPDATE OR DELETE ON Branches
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+
+CREATE TRIGGER log_baked_goods_trigger
+AFTER INSERT OR UPDATE OR DELETE ON BakedGoods
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+
+CREATE TRIGGER log_roles_trigger
+AFTER INSERT OR UPDATE OR DELETE ON Roles
 FOR EACH ROW EXECUTE FUNCTION log_changes_function();
 ```
 
@@ -1338,7 +1349,24 @@ FOR EACH ROW EXECUTE FUNCTION log_changes_function();
 
 ---
 
-## 10. בדיקה: הכנסת עובד חדש
+## 10. טריגרים לכל טבלה: קוד מלא
+
+ראה קוד מלא בסעיף 9 לעיל – כולל טריגרים על כל הטבלאות המרכזיות (Employee, Branches, Shifts, EmployeeShifts, BakedGoods, Roles).
+
+---
+
+## 11. חשיבות הלוגים לפעולות CRUD
+
+רישום אוטומטי של כל שינוי במסד הנתונים תורם ל:
+
+* שמירה על עקבות דיגיטליים – ניתן לדעת מתי ואיך בוצע שינוי.
+* איתור תקלות ושחזור מצבים קודמים במקרה של שגיאה.
+* עמידה בדרישות אבטחת מידע וביקורת פנימית.
+* ניתוח שינויים לצרכים עסקיים (לדוג' מי מהעובדים שונה הכי הרבה?).
+
+---
+
+## 12. בדיקה: הכנסת עובד חדש
 
 ### תיאור מילולי:
 
@@ -1355,6 +1383,7 @@ INSERT INTO Employee(name, roleId, branchId) VALUES ('איילת ברק', 2, 1);
 ---
 
 **סיום הקובץ**
+
 
 
 
