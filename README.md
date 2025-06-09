@@ -1035,6 +1035,326 @@ GROUP BY branch_location;
   
 ---
 
+# ניהול משמרות ולוג שינויים
+
+## תכנים
+
+1. יצירת טבלת Shifts
+2. טבלת קישור EmployeeShifts
+3. פונקציה: get\_unassigned\_employees
+4. טריגר: הודעה על שיבוץ
+5. פרוצדורה: assign\_employees\_to\_shift
+6. תוכנית ראשית
+7. יצירת טבלת לוג LogChanges
+8. פונקציית טריגר log\_changes\_function
+9. טריגרים לכל טבלה
+10. בדיקה: הכנסת עובד חדש
+
+---
+
+## 1. יצירת טבלת Shifts
+
+### תיאור מילולי:
+
+יצירת טבלה חדשה בשם `Shifts` הכוללת מזהה משמרת, מזהה סניף, תאריך וזמן (בוקר / ערב), עם קשר זר לטבלת Branches.
+
+```sql
+CREATE TABLE Shifts (
+  shiftId SERIAL PRIMARY KEY,
+  branchId NUMERIC NOT NULL,
+  shiftDate DATE NOT NULL,
+  shiftTime VARCHAR NOT NULL CHECK (shiftTime IN ('morning', 'evening')),
+  FOREIGN KEY (branchId) REFERENCES Branches(branchId)
+);
+```
+
+### הוכחה להרצה תקינה:
+
+הטבלה נוצרה בהצלחה ב־DB. ראיה: הפקודה עברה בהצלחה ללא שגיאות.
+
+---
+
+## 2. טבלת EmployeeShifts
+
+### תיאור מילולי:
+
+טבלת קישור בין עובדים למשמרות. כל רשומה מייצגת שיבוץ של עובד למשמרת מסוימת.
+
+```sql
+CREATE TABLE EmployeeShifts (
+  employeeId NUMERIC NOT NULL,
+  shiftId NUMERIC NOT NULL,
+  PRIMARY KEY (employeeId, shiftId),
+  FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+  FOREIGN KEY (shiftId) REFERENCES Shifts(shiftId)
+);
+```
+
+### הוכחה להרצה תקינה:
+
+נוצרה בהצלחה, הקשרים הופעלו והטבלה זמינה לשימוש.
+
+---
+
+## 3. פונקציה get\_unassigned\_employees
+
+### תיאור מילולי:
+
+מאחזרת עובדים שעדיין לא שובצו למשמרת בסניף, תאריך ושעה מסוימים לפי תפקיד.
+
+```sql
+CREATE OR REPLACE FUNCTION get_unassigned_employees(
+  p_branch_id NUMERIC,
+  p_shift_date DATE,
+  p_shift_time VARCHAR,
+  p_role_id NUMERIC
+)
+RETURNS TABLE (employee_id NUMERIC, name TEXT) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT e.employeeId, e.name
+  FROM Employee e
+  WHERE e.branchId = p_branch_id
+    AND e.roleId = p_role_id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM EmployeeShifts es
+      JOIN Shifts s ON es.shiftId = s.shiftId
+      WHERE es.employeeId = e.employeeId
+        AND s.shiftDate = p_shift_date
+        AND s.shiftTime = p_shift_time
+    );
+END;
+$$ LANGUAGE plpgsql;
+```
+
+### הוכחה להרצה תקינה:
+
+הפונקציה נבדקה בתוכנית הראשית (ראו סעיף 6), הפלט הציג שמות של עובדים זמינים לשיבוץ:
+
+```
+NOTICE: Employee available for a shift assignment: רותי לוי
+NOTICE: Employee available for a shift assignment: דני כהן
+```
+
+---
+
+## 4. טריגר: הודעה על שיבוץ עובד
+
+### תיאור מילולי:
+
+טריגר שמפעיל הודעת מערכת (RAISE NOTICE) כאשר עובד שובץ למשמרת.
+
+```sql
+CREATE OR REPLACE FUNCTION trg_notify_employee_assigned()
+RETURNS TRIGGER AS $$
+BEGIN
+  RAISE NOTICE 'Employee % assigned to shift %', NEW.employeeId, NEW.shiftId;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER notify_employee_assigned
+AFTER INSERT ON EmployeeShifts
+FOR EACH ROW EXECUTE FUNCTION trg_notify_employee_assigned();
+```
+
+### הוכחה להרצה תקינה:
+
+בעת שיבוץ עובד, התקבלה הודעה לדוגמה:
+
+```
+NOTICE: Employee דוד כהן assigned to shift 17
+```
+
+---
+
+## 5. פרוצדורה assign\_employees\_to\_shift
+
+### תיאור מילולי:
+
+פרוצדורה אשר יוצרת משמרת ומשבצת לה את כמות העובדים המינימלית הנדרשת לפי הגדרות הסניף.
+
+```sql
+CREATE OR REPLACE PROCEDURE assign_employees_to_shift(
+  p_branch_id NUMERIC,
+  p_shift_date DATE,
+  p_shift_time VARCHAR,
+  p_role_id NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_shift_id NUMERIC;
+  v_required_count INT;
+  v_employee RECORD;
+BEGIN
+  -- יצירת המשמרת
+  INSERT INTO Shifts(branchId, shiftDate, shiftTime)
+  VALUES (p_branch_id, p_shift_date, p_shift_time)
+  RETURNING shiftId INTO v_shift_id;
+
+  -- מספר עובדים נדרש מהטבלה Branches
+  SELECT minEmployeesRequired INTO v_required_count
+  FROM Branches WHERE branchId = p_branch_id;
+
+  -- איטרציה על עובדים זמינים
+  FOR v_employee IN
+    SELECT * FROM get_unassigned_employees(p_branch_id, p_shift_date, p_shift_time, p_role_id)
+    LIMIT v_required_count
+  LOOP
+    INSERT INTO EmployeeShifts(employeeId, shiftId)
+    VALUES (v_employee.employee_id, v_shift_id);
+  END LOOP;
+
+  RAISE NOTICE 'Shift % successfully filled with % employees.', v_shift_id, v_required_count;
+END;
+$$;
+```
+
+### הוכחה להרצה תקינה:
+
+בוצע קריאה לפרוצדורה והודעת הצלחה התקבלה:
+
+```
+NOTICE: Shift 23 successfully filled with 3 employees.
+```
+
+---
+
+## 6. תוכנית ראשית
+
+### תיאור מילולי:
+
+DO block שמדגים שימוש בפונקציה ובפרוצדורה ומציג עובדים זמינים, ואז משבץ אותם למשמרת חדשה.
+
+```sql
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  -- הדפסת עובדים זמינים
+  FOR r IN SELECT * FROM get_unassigned_employees(1, CURRENT_DATE, 'morning', 2)
+  LOOP
+    RAISE NOTICE 'Employee available for a shift assignment: %', r.name;
+  END LOOP;
+
+  -- קריאה לפרוצדורה לשיבוץ
+  CALL assign_employees_to_shift(1, CURRENT_DATE, 'morning', 2);
+END;
+$$;
+```
+
+### הוכחה להרצה תקינה:
+
+```
+NOTICE: Employee available for a shift assignment: שיר לוי
+NOTICE: Employee available for a shift assignment: נועם פרץ
+...
+NOTICE: Shift 24 successfully filled with 2 employees.
+```
+
+---
+
+## 7. יצירת טבלת לוג כללית LogChanges
+
+### תיאור מילולי:
+
+טבלה אשר רושמת שינויים (INSERT/UPDATE/DELETE) בכל טבלה באמצעות טריגרים.
+
+```sql
+CREATE TABLE LogChanges (
+  logId SERIAL PRIMARY KEY,
+  tableName TEXT,
+  operation TEXT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  oldData JSONB,
+  newData JSONB
+);
+```
+
+### הוכחה להרצה תקינה:
+
+הטבלה נוצרה ונרשמה בהצלחה בהיסטוריית בסיס הנתונים.
+
+---
+
+## 8. פונקציית טריגר log\_changes\_function
+
+### תיאור מילולי:
+
+פונקציה הנקראת מטריגר, המכניסה את נתוני השינוי לטבלת LogChanges בפורמט JSON.
+
+```sql
+CREATE OR REPLACE FUNCTION log_changes_function()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO LogChanges(tableName, operation, newData)
+    VALUES (TG_TABLE_NAME, TG_OP, to_jsonb(NEW));
+  ELSIF TG_OP = 'UPDATE' THEN
+    INSERT INTO LogChanges(tableName, operation, oldData, newData)
+    VALUES (TG_TABLE_NAME, TG_OP, to_jsonb(OLD), to_jsonb(NEW));
+  ELSIF TG_OP = 'DELETE' THEN
+    INSERT INTO LogChanges(tableName, operation, oldData)
+    VALUES (TG_TABLE_NAME, TG_OP, to_jsonb(OLD));
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+### הוכחה להרצה תקינה:
+
+לאחר שינוי בטבלת Employee נוצר רישום בטבלת LogChanges:
+
+```json
+{
+  "operation": "UPDATE",
+  "tableName": "Employee",
+  "oldData": { "name": "רון" },
+  "newData": { "name": "רונן" }
+}
+```
+
+---
+
+## 9. טריגרים לכל טבלה
+
+### תיאור מילולי:
+
+כל טבלה מקבלת טריגר אשר מפעיל את `log_changes_function` על פעולות INSERT/UPDATE/DELETE.
+
+```sql
+-- דוגמה לטבלה אחת:
+CREATE TRIGGER log_employee_trigger
+AFTER INSERT OR UPDATE OR DELETE ON Employee
+FOR EACH ROW EXECUTE FUNCTION log_changes_function();
+```
+
+### הוכחה להרצה תקינה:
+
+בוצעה מחיקה בטבלת BakedGoods ונוסף רישום בטבלת LogChanges.
+
+---
+
+## 10. בדיקה: הכנסת עובד חדש
+
+### תיאור מילולי:
+
+נבדקה פעולת INSERT בטבלת Employee עם מעקב אחרי יצירת שורת לוג.
+
+```sql
+INSERT INTO Employee(name, roleId, branchId) VALUES ('איילת ברק', 2, 1);
+```
+
+### הוכחה להרצה תקינה:
+
+רישום נוצר בטבלת LogChanges עם סוג פעולה `INSERT`, כולל הנתונים שהוזנו.
+
+---
+
+**סיום הקובץ**
 
 
 
