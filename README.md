@@ -1805,37 +1805,6 @@ $$;
 
 
 
-# מערכת ניהול עובדים - מאפייה 🍞
-
-מערכת ממשק גרафי לניהול עובדים במאפייה המחוברת לבסיס נתונים PostgreSQL.
-
----
-
-## הוראות הפעלה
-
-### התקנה
-1. התקינו Python 3.7+ ו-PostgreSQL
-2. התקינו תלויות:
-```bash
-pip install psycopg2-binary
-```
-3. צרו בסיס נתונים `BAKERY_DB` עם הטבלאות הנדרשות
-4. עדכנו פרטי חיבור במשתנה `DB_CONFIG`
-5. הפעילו:
-```bash
-python employee_management.py
-```
-
----
-
-## הכלים שנעשה בהם שימוש
-
-- **Python + Tkinter**: יצירת ממשק המשתמש הגרафי
-- **PostgreSQL**: בסיס הנתונים לאחסון מידע העובדים
-- **psycopg2**: חיבור בין Python לבסיס הנתונים
-
----
-
 # מערכת ניהול מאפייה - מסמך פרויקט מלא 🍞
 
 מערכת ניהול מקיפה למאפייה הכוללת מסך ראשי לניווט ומודול ניהול עובדים מלא המחובר לבסיס נתונים PostgreSQL.
@@ -1869,7 +1838,7 @@ python main_menu.py
 ```
 
 ## הכלים שנעשה בהם שימוש
-* **Python + Tkinter**: יצירת ממשק המשתמש הגרафי
+* **Python + Tkinter**: יצירת ממשק המשתמש הגרפי
 * **PostgreSQL**: בסיס הנתונים לאחסון מידע
 * **psycopg2**: חיבור בין Python לבסיס הנתונים
 
@@ -1976,47 +1945,129 @@ python main_menu.py
 #### עדכון פרטי עובד
 ![טופס עדכון עם פרטים קיימים נטענים מבסיס הנתונים]
 
-## מבנה בסיס הנתונים
+## שלב ג': מודול ניהול מוצרי מאפה 🥖
 
-המערכת עובדת עם 3 טבלאות מקושרות:
+### כניסה למודול
+מהמסך הראשי, לחיצה על כפתור "ניהול מוצרי מאפה" פותחת את מסך ניהול המוצרים המתקדם.
 
-### טבלת Employee (עובדים)
-- מזהה עובד (מפתח ראשי)
-- שם מלא, טלפון, אימייל
-- תאריך לידה
-- מזהה סניף (מפתח זר)
-- מזהה תפקיד (מפתח זר)
+### תיאור המודול
+מערכת CRUD מלאה לניהול מוצרי המאפייה כולל מידע תזונתי מפורט ופרטי קטגוריות.
 
-### טבלת Branches (סניפים)
-- מזהה סניף
-- שם הסניף
-- כתובת
+### ארכיטקטורת המערכת
+המודול בנוי בארכיטקטורת שכבות מפורדות:
 
-### טבלת Roles (תפקידים)
-- מזהה תפקיד
-- שם התפקיד
-- תיאור התפקיד
-
-## מבנה הקבצים
-
-```
-bakery_management/
-├── main_menu.py          # המסך הראשי - נקודת הכניסה
-├── employee_screen.py    # מסך ניהול עובדים מלא
-├── baked_goods_screen.py # מסך ניהול מוצרי מאפה (לפיתוח עתידי)
-├── proc_screen.py        # מסך ניהול פסי ייצור (לפיתוח עתידי)
-└── reports_screen.py     # מסך דוחות ושאילתות (לפיתוח עתידי)
+#### 1. שכבת מודל הנתונים (Data Model)
+```python
+class BakedGoods:
+    - bakedGood_id: מזהה ייחודי
+    - name: שם המוצר
+    - category: שם הקטגוריה
+    - category_id: מזהה קטגוריה
+    - nutritionfacts_id: מזהה מידע תזונתי
+    - price_per_weight: מחיר לכל יחידת משקל
+    - calories: קלוריות
+    - carbs: פחמימות
+    - protein: חלבון
+    - fat: שומן
+    - sugar: סוכר
+    - allergen_Info: מידע על אלרגנים
+    - shelf_Life: חיי מדף
 ```
 
-## תכונות מתקדמות
+#### 2. שכבת גישה לנתונים (Data Access Layer)
+```python
+class BakedGoodsRepository:
+    - create(): הוספת מוצר חדש עם מידע תזונתי
+    - read_all(): שליפת כל המוצרים
+    - read_by_id(): שליפת מוצר לפי מזהה
+    - update(): עדכון מוצר קיים
+    - delete(): מחיקת מוצר
+    - search(): חיפוש מוצרים לפי קריטריונים
+    - get_all_categories(): שליפת כל הקטגוריות
+```
 
-- **חיבור דינמי לבסיס נתונים**: טעינת רשימת סניפים ותפקידים בזמן אמת
-- **ניהול שגיאות**: הודעות ברורות בעברית למשתמש
-- **ממשק מגיב**: עדכון אוטומטי של הטבלה לאחר כל פעולה
-- **חיפוש גמיש**: חיפוש חלקי בכל השדות
-- **ואידציה**: בדיקת תקינות נתונים לפני שמירה
+#### 3. שכבת הלוגיקה העסקית (Business Logic Layer)
+```python
+class BakedGoodsService:
+    - validate_bakedGood_data(): ואליטציה של נתוני המוצר
+    - create_bakedGood(): יצירת מוצר חדש עם ואליטציה
+    - get_all_bakedGoods(): שליפת כל המוצרים
+    - update_bakedGood(): עדכון מוצר עם ואליטציה
+    - delete_bakedGood(): מחיקת מוצר
+    - search_bakedGoods(): חיפוש מוצרים
+    - get_categories(): שליפת קטגוריות
+```
 
-המערכת מספקת פתרון מלא ומקצועי לניהול עובדים במאפייה, החל מנקודת כניסה מרכזית ועד לפעולות ניהול מתקדמות.
+### מבנה המסך
+המסך מחולק ל-4 אזורים עיקריים:
+
+#### 1. אזור החיפוש (חלק עליון)
+![איזור חיפוש מוצרים]
+- תפריט נפתח לבחירת קריטריון חיפוש:
+  * שם מוצר
+  * קטגוריה
+  * קלוריות
+  * פחמימות
+  * חלבון
+  * שומן
+  * סוכר
+  * מידע על אלרגנים
+  * חיי מדף
+- שדה טקסט להזנת מילת החיפוש
+- כפתורי "חפש" ו"נקה" לביצוע וביטול חיפוש
+
+#### 2. כפתורי פעולות (שורה שנייה)
+![כפתורי פעולות מוצרים]
+- **הוסף מוצר**: פתיחת טופס להוספת מוצר חדש
+- **עדכן מוצר**: עריכת פרטי מוצר נבחר מהטבלה
+- **מחק מוצר**: מחיקת מוצר נבחר עם אישור
+- **רענן**: טעינה מחודשת של נתוני המוצרים
+
+#### 3. טבלת המוצרים (חלק מרכזי שמאלי)
+![טבלת מוצרי מאפה]
+- הצגת כל המוצרים בטבלה מסודרת עם העמודות:
+  * שם מוצר
+  * קטגוריה
+  * מחיר ליחידה
+  * קלוריות
+  * פחמימות
+  * חלבון
+  * שומן
+  * סוכר
+  * מידע על אלרגנים
+  * חיי מדף
+- בחירת מוצר על ידי לחיצה על השורה (הדגשה בכחול)
+- גלילה אוטומטית אנכית ואופקית
+- שורות מוצבעות לחילופין לקריאות טובה יותר
+
+#### 4. טופס עריכה (חלק ימני - דינמי)
+![טופס עריכת מוצר]
+- מופיע רק בעת הוספה או עריכה של מוצר
+- שדות קלט:
+  * שם מוצר (טקסט)
+  * קטגוריה (תפריט נפתח - נטען מבסיס הנתונים)
+  * קלוריות (מספר)
+  * פחמימות (מספר)
+  * חלבון (מספר)
+  * שומן (מספר)
+  * סוכר (מספר)
+  * מידע על אלרגנים (טקסט)
+  * חיי מדף (מספר שלם)
+- כפתורי "שמור" ו"ביטול"
+
+### פעולות CRUD מפורטות
+
+#### הוספת מוצר חדש (Create)
+1. לחיצה על "הוסף מוצר"
+2. טופס עריכה נפתח בצד ימין
+3. מילוי כל השדות הנדרשים:
+   - שם המוצר
+   - בחירת קטגוריה מהתפריט הנפתח
+   - מילוי כל הנתונים התזונתיים
+   - מידע על אלרגנים
+   - חיי מדף במספר ימים
+4. לחיצה על "שמור" - המוצר נוסף לשתי טבלאות במקביל:
+   - טבלת BakedGoods (פרטי המו
 
 
 
