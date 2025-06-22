@@ -20,6 +20,8 @@
 
 [Phase 4](#phase-4)
 
+[Phase 5](#phase-5)
+
 
 
 ## Cover Page
@@ -1875,28 +1877,39 @@ python main_menu.py
 ### מבנה המסך
 המסך מחולק ל-4 אזורים עיקריים:
 
-#### 1. אזור החיפוש (חלק עליון)
-![איזור חיפוש]
+#### 1. אזור החיפוש 
+
+![image](https://github.com/user-attachments/assets/24529d69-5ebd-49ff-8f44-f7d4cd8e96b2)
+
+
 - תפריט נפתח לבחירת קריטריון חיפוש (שם, טלפון, אימייל, תפקיד, סניף)
 - שדה טקסט להזנת מילת החיפוש
 - כפתורי "חפש" ו"נקה" לביצוע וביטול חיפוש
 
-#### 2. כפתורי פעולות (שורה שנייה)
-![כפתורי פעולות]
+#### 2. כפתורי פעולות 
+
+![image](https://github.com/user-attachments/assets/244fa68e-65be-4f71-8a14-e7d8bb248eb6)
+
+
 - **הוסף עובד**: פתיחת טופס להוספת עובד חדש
 - **עדכן עובד**: עריכת פרטי עובד נבחר מהטבלה
 - **מחק עובד**: מחיקת עובד נבחר עם אישור
 - **רענן**: טעינה מחודשת של נתוני העובדים מבסיס הנתונים
 
 #### 3. טבלת העובדים (חלק מרכזי שמאלי)
-![טבלת עובדים]
+
+![image](https://github.com/user-attachments/assets/e9122804-67fa-4fda-a936-c00d28a9e722)
+
+
 - הצגת כל העובדים בטבלה מסודרת
 - עמודות: שם מלא, טלפון, אימייל, תאריך לידה, סניף, תפקיד
 - בחירת עובד על ידי לחיצה על השורה (הדגשה בכחול)
 - גלילה אוטומטית במקרה של עובדים רבים
 
-#### 4. טופס עריכה (חלק ימני - דינמי)
-![טופס עריכה]
+#### 4. טופס עריכה 
+
+![image](https://github.com/user-attachments/assets/aab853d5-4875-4905-88f2-599692a601fb)
+
 - מופיע רק בעת הוספה או עריכה של עובד
 - שדות טקסט: שם מלא, טלפון, אימייל
 - בוחר תאריך לידה
@@ -1937,13 +1950,26 @@ python main_menu.py
 ![מסך ראשי - הצגת כל העובדים עם כלי החיפוש]
 
 #### הוספת עובד חדש
-![טופס הוספת עובד עם כל השדות והתפריטים]
+
+![image](https://github.com/user-attachments/assets/2fac2b8b-2133-4406-9d2e-98aef0c1f0c8)
+
+![image](https://github.com/user-attachments/assets/8be31594-003b-4d94-8b98-16fafa6a330a)
+
 
 #### חיפוש עובדים
 ![תוצאות חיפוש לפי שם עובד עם הדגשת התוצאות]
 
 #### עדכון פרטי עובד
-![טופס עדכון עם פרטים קיימים נטענים מבסיס הנתונים]
+
+![image](https://github.com/user-attachments/assets/84814d91-3a5f-4222-8695-32e9f8351ea4)
+
+![image](https://github.com/user-attachments/assets/83067632-7e25-4728-b287-c84e45e96b38)
+
+#### מחיקת עובדים
+
+![image](https://github.com/user-attachments/assets/31468bd4-0886-458e-90ba-0836ab3da8e3)
+
+
 
 ## שלב ג': מודול ניהול מוצרי מאפה 🥖
 
