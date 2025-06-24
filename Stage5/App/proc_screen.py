@@ -21,7 +21,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
             )
@@ -102,7 +102,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
             )
@@ -161,7 +161,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
  )
@@ -202,7 +202,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
             )
@@ -251,7 +251,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
             )
@@ -308,7 +308,7 @@ class ProduceApp:
             conn = psycopg2.connect(
                 dbname="BAKERY_DB",
                 user="postgres",
-                password="Rcev9768!",
+                password="pswd",
                 host="localhost",
                 port="5432"
             )
