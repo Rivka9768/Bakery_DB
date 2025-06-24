@@ -45,7 +45,7 @@ root.geometry("400x450")
 root.configure(bg="#f4f4f4")
 
 # כותרת
-title = tk.Label(root, text="ברוכים הבאים למערכת הניהול", font=("Arial", 16), bg="#f4f4f4")
+title = tk.Label(root, text=" ברוכים הבאים למערכת ניהול המאפייה", font=("Arial", 16), bg="#f4f4f4")
 title.pack(pady=20)
 
 # כפתורים
