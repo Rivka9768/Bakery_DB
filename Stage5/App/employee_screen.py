@@ -8,7 +8,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'dbname': 'BAKERY_DB',
     'user': 'postgres',
-    'password': 'pswd'
+    'password': 'Rcev9768!'
 }
 
 class DatabaseManager:
@@ -176,39 +176,6 @@ class EmployeeRepository:
             return True
         except Exception as e:
             raise Exception(f"Failed to delete employee: {str(e)}")
-    
-    @staticmethod
-    def search(column: str, search_term: str) -> List[Employee]:
-        """SEARCH - Find employees by column and search term"""
-        # Valid searchable columns (security measure)
-        valid_columns = {
-            'name': 'name',
-            'phone': 'phone', 
-            'email': 'email',
-            'dob': 'dob',
-            'branch': 'branchId',
-            'role': 'roleId'
-        }
-        
-        if column.lower() not in valid_columns:
-            raise Exception(f"Invalid search column: {column}")
-        
-        db_column = valid_columns[column.lower()]
-        
-        # Use parameterized query to prevent SQL injection
-        query = f"""
-            SELECT employeeId, name, phone, email, dob, branchId, roleId
-            FROM Employee
-            WHERE CAST({db_column} AS TEXT) ILIKE '% %' %s
-            ORDER BY name
-        """
-        
-        try:
-            search_pattern = f"%{search_term}%"
-            rows = DatabaseManager.execute_query(query, (search_pattern,), fetch=True)
-            return [Employee.from_db_row(row) for row in rows]
-        except Exception as e:
-            raise Exception(f"Search failed: {str(e)}")
         
     @staticmethod
     def get_all_branches() -> list[tuple[int, str]]:
@@ -283,26 +250,8 @@ class EmployeeService:
         """Delete employee"""
         return self.repository.delete(employee_id)
     
-    def search_employees(self, column: str, search_term: str) -> List[Employee]:
-        """Search employees"""
-        if not search_term.strip():
-            return self.get_all_employees()
-        
-        return self.repository.search(column, search_term)
-    
-    def get_search_columns(self) -> Dict[str, str]:
-        """Get available search columns with Hebrew labels"""
-        column_mapping = {
-            "name": "שם",
-            "phone": "טלפון", 
-            "email": "אימייל",
-            "dob": "תאריך לידה",
-            "branch": "סניף",
-            "role": "תפקיד"
-        }
-        return column_mapping
-    
         # You'll also need these methods in your employee service:
+    
     def get_branches(self) -> list[tuple[int, str]]:
         """Get all branches"""
         rows = EmployeeRepository.get_all_branches()  # Implement this in your repository
@@ -361,13 +310,9 @@ class EmployeeApp(tk.Tk):
                          style='Title.TLabel')
         title.pack(pady=(0, 20))
         
-        # Top section (search and actions)
         top_frame = ttk.Frame(main_container)
         top_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        # Search frame
-        self.setup_search_frame(top_frame)
-        
+                
         # Action buttons
         self.setup_action_buttons(top_frame)
         
@@ -384,55 +329,6 @@ class EmployeeApp(tk.Tk):
         
         # Right side - Employee form (initially hidden)
         self.setup_employee_form(content_frame)
-    
-    def setup_search_frame(self, parent):
-        """Setup search controls"""
-        search_frame = ttk.LabelFrame(parent, text="חיפוש עובדים", padding=10)
-        search_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        # Get search columns
-        try:
-            self.column_mapping = self.employee_service.get_search_columns()
-        except Exception as e:
-            messagebox.showerror("שגיאה", f"Error loading search columns: {str(e)}")
-            self.column_mapping = {}
-        
-        # Search controls frame
-        controls_frame = ttk.Frame(search_frame)
-        controls_frame.pack(fill=tk.X)
-        
-        # Search by label
-        ttk.Label(controls_frame, text="חפש לפי:", style='Heading.TLabel').grid(row=0, column=0, padx=(0, 10), sticky=tk.W)
-        
-        # Search column selector
-        self.search_by_var = tk.StringVar()
-        self.search_menu = ttk.Combobox(
-            controls_frame,
-            textvariable=self.search_by_var,
-            values=list(self.column_mapping.values()),
-            state="readonly",
-            width=15,
-            font=('Arial', 10)
-        )
-        self.search_menu.grid(row=0, column=1, padx=(0, 10))
-        if self.column_mapping:
-            self.search_by_var.set(list(self.column_mapping.values())[0])
-        
-        # Search entry
-        ttk.Label(controls_frame, text="מחרוזת חיפוש:", style='Heading.TLabel').grid(row=0, column=2, padx=(10, 5), sticky=tk.W)
-        self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(controls_frame, textvariable=self.search_var, width=25, font=('Arial', 10))
-        self.search_entry.grid(row=0, column=3, padx=(0, 10))
-        
-        # Bind Enter key to search
-        self.search_entry.bind('<Return>', lambda e: self.search_employees())
-        
-        # Search buttons
-        btn_frame = ttk.Frame(controls_frame)
-        btn_frame.grid(row=0, column=4, padx=10)
-        
-        ttk.Button(btn_frame, text="🔍 חפש", command=self.search_employees, style='Primary.TButton').pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(btn_frame, text="🗑️ נקה", command=self.clear_search, style='Action.TButton').pack(side=tk.LEFT)
     
     def setup_action_buttons(self, parent):
         """Setup action buttons"""
@@ -592,43 +488,6 @@ class EmployeeApp(tk.Tk):
                            values=employee.to_display_tuple(),
                            tags=(tag,))
     
-    def search_employees(self):
-        """Search for employees"""
-        search_term = self.search_var.get().strip()
-        search_column_hebrew = self.search_by_var.get()
-        
-        # Find English column name
-        search_column_english = None
-        for eng, heb in self.column_mapping.items():
-            if heb == search_column_hebrew:
-                search_column_english = eng
-                break
-        
-        if not search_column_english:
-            messagebox.showerror("שגיאה", "Invalid search column selected")
-            return
-        
-        try:
-            employees = self.employee_service.search_employees(search_column_english, search_term)
-            self.display_employees(employees)
-            
-            # Show search results info
-            status_text = f"נמצאו {len(employees)} עובדים"
-            if search_term:
-                status_text += f" עבור '{search_term}'"
-            
-            # Update window title to show search results
-            self.title(f"ניהול עובדים - מאפייה ({status_text})")
-            
-        except Exception as e:
-            messagebox.showerror("שגיאה", f"Search error: {str(e)}")
-    
-    def clear_search(self):
-        """Clear search and show all employees"""
-        self.search_var.set("")
-        self.title("ניהול עובדים - מאפייה")
-        self.load_employees()
-    
     def on_employee_select(self, event):
         """Handle employee selection"""
         selection = self.tree.selection()
@@ -646,14 +505,45 @@ class EmployeeApp(tk.Tk):
     
     def populate_form(self, employee: Employee):
         """Populate form with employee data"""
-        values = [employee.name, employee.phone, employee.email, 
-                 str(employee.dob), str(employee.branch_id), str(employee.role_id)]
-        labels = ["שם", "טלפון", "אימייל", "תאריך לידה (YYYY-MM-DD)", "קוד סניף", "קוד תפקיד"]
+        # Regular text fields
+        text_fields = {
+            "שם": employee.name,
+            "טלפון": employee.phone,
+            "אימייל": employee.email,
+            "תאריך לידה (YYYY-MM-DD)": str(employee.dob)
+        }
         
-        for label, value in zip(labels, values):
+        # Clear and populate text fields
+        for label, value in text_fields.items():
             entry = self.entries[label]
             entry.delete(0, tk.END)
             entry.insert(0, value)
+        
+        # Set branch dropdown to the employee's branch name
+        if employee.branch_name:
+            self.branch_combobox.set(employee.branch_name)
+        else:
+            # Fallback: find branch name by ID
+            branch_name = None
+            for bid, bname in self.branches:
+                if bid == employee.branch_id:
+                    branch_name = bname
+                    break
+            if branch_name:
+                self.branch_combobox.set(branch_name)
+        
+        # Set role dropdown to the employee's role name
+        if employee.role_name:
+            self.role_combobox.set(employee.role_name)
+        else:
+            # Fallback: find role name by ID
+            role_name = None
+            for rid, rname in self.roles:
+                if rid == employee.role_id:
+                    role_name = rname
+                    break
+            if role_name:
+                self.role_combobox.set(role_name)
     
     def clear_form(self):
         """Clear all form fields"""
@@ -752,7 +642,6 @@ class EmployeeApp(tk.Tk):
             print(f"Error in save_employee: {str(e)}")
             messagebox.showerror("שגיאה", f"שגיאה בשמירת העובד: {str(e)}")
     
-
     def delete_employee(self):
         """Delete selected employee"""
         if not self.selected_employee:
@@ -778,7 +667,6 @@ class EmployeeApp(tk.Tk):
     def refresh_screen(self):
         """Refresh the entire screen"""
         self.cancel_form()
-        self.clear_search()
         self.selected_employee = None
         self.title("ניהול עובדים - מאפייה")
 
