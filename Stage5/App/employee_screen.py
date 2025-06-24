@@ -8,7 +8,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'dbname': 'BAKERY_DB',
     'user': 'postgres',
-    'password': 'Rcev9768!'
+    'password': 'pswd'
 }
 
 class DatabaseManager:
