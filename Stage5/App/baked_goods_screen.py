@@ -9,7 +9,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'dbname': 'BAKERY_DB',
     'user': 'postgres',
-    'password': 'pswd'
+    'password': 'Rcev9768!'
 }
 
 class DatabaseManager:
@@ -315,61 +315,6 @@ class BakedGoodsRepository:
             raise Exception(f"Failed to delete bakedGood: {str(e)}")
     
     @staticmethod
-    def search(column: str, search_term: str) -> List[BakedGoods]:
-        """SEARCH - Find bakedGoods by column and search term"""
-        # Valid searchable columns (security measure)
-        valid_columns = {
-            "name": "name",
-            "category": "categoryId",
-            "price_per_weight": "price_per_weight",
-            "calories": "calories",
-            "carbs": "carbs",
-            "protein": "protein",
-            "fat": "fat",
-            "sugar": "sugar",
-            "allergen_info": "allergen_Info",
-            "shelf_life": "shelf_Life"
-        }
-        
-        if column.lower() not in valid_columns:
-            raise Exception(f"Invalid search column: {column}")
-        
-        db_column = valid_columns[column.lower()]
-        
-        # Use parameterized query to prevent SQL injection
-        query = f"""
-        SELECT 
-            bg.bakedGoodsid as bakedGood_id,
-            bg.name,
-            c.category,
-            c.categoryid as category_id,
-            nf.nutritionfactsid as nutritionfacts_id,
-            c.Priceperweight as price_per_weight,
-            nf.calories,
-            nf.carbs,
-            nf.protein,
-            nf.fat,
-            nf.sugar ,
-            bg.AllergenInfo as allergen_Info,
-            bg.lifetime as shelf_Life
-        FROM
-            BakedGoods bg
-        JOIN
-            Categories c ON bg.category_id = c.category_id
-        JOIN
-            NutritionFacts nf ON bg.nutritionfacts_id = nf.nutritionfacts_id
-        WHERE
-            {db_column} ILIKE %s
-        """
-        
-        try:
-            search_pattern = f"%{search_term}%"
-            rows = DatabaseManager.execute_query(query, (search_pattern,), fetch=True)
-            return [BakedGoods.from_db_row(row) for row in rows]
-        except Exception as e:
-            raise Exception(f"Search failed: {str(e)}")
-    
-    @staticmethod
     def get_all_categories() -> list[tuple[int, str]]:
         """שליפת מזהים ושמות של כל הקטגוריות"""
         query = "SELECT categoryId, name FROM Categories"
@@ -436,27 +381,6 @@ class BakedGoodsService:
         """Delete bakedGood by ID"""
         return self.repository.delete(bakedGood_id)
     
-    def search_bakedGoods(self, column: str, search_term: str) -> List[BakedGoods]:
-        """Search bakedGoods"""
-        if not search_term.strip():
-            return self.get_all_bakedGoods()
-        
-        return self.repository.search(column, search_term)
-
-    def get_search_columns(self) -> Dict[str, str]:
-        """Get available search columns with Hebrew labels"""
-        column_mapping = {
-            "name": "שם מוצר",
-            "category": "קטגוריה",
-            "calories": "קלוריות",
-            "carbs": "פחמימות",
-            "protein": "חלבון",
-            "fat": "שומן",
-            "sugar": "סוכר",
-            "allergen_Info": "מידע על אלרגנים",
-            "shelf_Life": "חיי מדף"
-        }
-        return column_mapping
     
     def get_categories(self) -> list[tuple[int, str]]:
         rows = BakedGoodsRepository.get_all_categories()
@@ -515,13 +439,9 @@ class BakedGoodsApp(tk.Tk):
                          style='Title.TLabel')
         title.pack(pady=(0, 20))
         
-        # Top section (search and actions)
         top_frame = ttk.Frame(main_container)
         top_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        # Search frame
-        self.setup_search_frame(top_frame)
-        
+                
         # Action buttons
         self.setup_action_buttons(top_frame)
         
@@ -538,56 +458,6 @@ class BakedGoodsApp(tk.Tk):
         
         # Right side - BakedGood form (initially hidden)
         self.setup_bakedGood_form(content_frame)
-
-
-    def setup_search_frame(self, parent):
-        """Setup search controls"""
-        search_frame = ttk.LabelFrame(parent, text="חיפוש מוצרי מאפה", padding=10)
-        search_frame.pack(fill=tk.X, pady=(0, 10))
-        
-        # Get search columns
-        try:
-            self.column_mapping = self.bakedGood_service.get_search_columns()
-        except Exception as e:
-            messagebox.showerror("שגיאה", f"Error loading search columns: {str(e)}")
-            self.column_mapping = {}
-        
-        # Search controls frame
-        controls_frame = ttk.Frame(search_frame)
-        controls_frame.pack(fill=tk.X)
-        
-        # Search by label
-        ttk.Label(controls_frame, text="חפש לפי:", style='Heading.TLabel').grid(row=0, column=0, padx=(0, 10), sticky=tk.W)
-        
-        # Search column selector
-        self.search_by_var = tk.StringVar()
-        self.search_menu = ttk.Combobox(
-            controls_frame,
-            textvariable=self.search_by_var,
-            values=list(self.column_mapping.values()),
-            state="readonly",
-            width=15,
-            font=('Arial', 10)
-        )
-        self.search_menu.grid(row=0, column=1, padx=(0, 10))
-        if self.column_mapping:
-            self.search_by_var.set(list(self.column_mapping.values())[0])
-        
-        # Search entry
-        ttk.Label(controls_frame, text="מחרוזת חיפוש:", style='Heading.TLabel').grid(row=0, column=2, padx=(10, 5), sticky=tk.W)
-        self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(controls_frame, textvariable=self.search_var, width=25, font=('Arial', 10))
-        self.search_entry.grid(row=0, column=3, padx=(0, 10))
-        
-        # Bind Enter key to search
-        self.search_entry.bind('<Return>', lambda e: self.search_bakedGoods())
-        
-        # Search buttons
-        btn_frame = ttk.Frame(controls_frame)
-        btn_frame.grid(row=0, column=4, padx=10)
-        
-        ttk.Button(btn_frame, text="🔍 חפש", command=self.search_bakedGoods, style='Primary.TButton').pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(btn_frame, text="🗑️ נקה", command=self.clear_search, style='Action.TButton').pack(side=tk.LEFT)
 
     def setup_action_buttons(self, parent):
             """Setup action buttons"""
@@ -726,45 +596,6 @@ class BakedGoodsApp(tk.Tk):
         
 
 
-    def search_bakedGoods(self):
-        """Search for bakedGoods"""
-        search_term = self.search_var.get().strip()
-        search_column_hebrew = self.search_by_var.get()
-        
-        # Find English column name
-        search_column_english = None
-        for eng, heb in self.column_mapping.items():
-            if heb == search_column_hebrew:
-                search_column_english = eng
-                break
-        
-        if not search_column_english:
-            messagebox.showerror("שגיאה", "Invalid search column selected")
-            return
-        
-        try:
-            bakedGoods = self.bakedGood_service.search_bakedGoods(search_column_english, search_term)
-            self.display_bakedGoods(bakedGoods)
-            
-            # Show search results info
-            status_text = f"נמצאו {len(bakedGoods)} מוצרים"
-            if search_term:
-                status_text += f" עבור '{search_term}'"
-            
-            # Update window title to show search results
-            self.title(f"ניהול מוצרים - מאפייה ({status_text})")
-            
-        except Exception as e:
-            messagebox.showerror("שגיאה", f"Search error: {str(e)}")
-    
-
-
-    def clear_search(self):
-        """Clear search and show all bakedGoods"""
-        self.search_var.set("")
-        self.title("ניהול מוצרים - מאפייה")
-        self.load_bakedGoods()
-
     def on_bakedGood_select(self, event):
         """Handle bakedGood selection"""
         selection = self.tree.selection()
@@ -784,23 +615,41 @@ class BakedGoodsApp(tk.Tk):
 
     def populate_form(self, bakedGood: BakedGoods):
         """Populate form with bakedGood data"""
-        values = [
-            bakedGood.name, 
-            bakedGood.category,
-            bakedGood.calories,
-            bakedGood.carbs,
-            bakedGood.protein,
-            bakedGood.fat,
-            bakedGood.sugar,
-            bakedGood.allergen_Info,
-            bakedGood.shelf_Life
-        ]
-        labels = [ "שם מוצר", "קטגוריה", "קלוריות", "פחמימות", "חלבון", "שומן", "סוכר", "מידע על אלרגנים", "חיי מדף"]
+        # Regular text fields
+        text_fields = {
+            "שם מוצר": bakedGood.name,
+            "קלוריות": str(bakedGood.calories),
+            "פחמימות": str(bakedGood.carbs),
+            "חלבון": str(bakedGood.protein),
+            "שומן": str(bakedGood.fat),
+            "סוכר": str(bakedGood.sugar),
+            "מידע על אלרגנים": bakedGood.allergen_Info,
+            "חיי מדף": str(bakedGood.shelf_Life)
+        }
         
-        for label, value in zip(labels, values):
+        # Clear and populate text fields
+        for label, value in text_fields.items():
             entry = self.entries[label]
             entry.delete(0, tk.END)
-            entry.insert(0, value)   
+            entry.insert(0, str(value) if value is not None else "")
+        
+        # Set category dropdown to the bakedGood's category name
+        # The category field from your JOIN query contains the category name
+        if bakedGood.category:
+            self.category_combobox.set(bakedGood.category)
+        else:
+            # Fallback: find category name by ID if category name is not available
+            category_name = None
+            for cat_id, cat_name in self.categories:
+                if cat_id == bakedGood.category_id:
+                    category_name = cat_name
+                    break
+            if category_name:
+                self.category_combobox.set(category_name)
+            else:
+                # Set to first category as default if nothing is found
+                if self.categories:
+                    self.category_combobox.set(self.categories[0][1])
     
     def clear_form(self):
         """Clear all form fields"""
@@ -920,7 +769,6 @@ class BakedGoodsApp(tk.Tk):
     def refresh_screen(self):
         """Refresh the entire screen"""
         self.cancel_form()
-        self.clear_search()
         self.selected_bakedGood = None
         self.title("ניהול מוצרים - מאפייה")
 
